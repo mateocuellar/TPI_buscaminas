@@ -13,7 +13,15 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="D:/SSD/Users/rodri/Escritorio/Programacion II NEW/trabajo-programacion-buscaminas/SFML/include" />
+					<Add directory="include" />
 				</Compiler>
+				<Linker>
+					<Add library="sfml-graphics" />
+					<Add library="sfml-window" />
+					<Add library="sfml-system" />
+					<Add directory="D:/SSD/Users/rodri/Escritorio/Programacion II NEW/trabajo-programacion-buscaminas/SFML/lib" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/TPI_Buscaminas" prefix_auto="1" extension_auto="1" />
@@ -22,6 +30,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,7 +41,13 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="include/Partida.h" />
+		<Unit filename="include/menuPrincipal.h" />
+		<Unit filename="include/registroUsuario.h" />
+		<Unit filename="src/Partida.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/menuPrincipal.cpp" />
+		<Unit filename="src/registroUsuario.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
