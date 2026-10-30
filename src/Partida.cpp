@@ -1,4 +1,5 @@
 #include "Partida.h"
+#include "seleccionPersonaje.h"
 
 using namespace std;
 using namespace sf;
@@ -7,6 +8,10 @@ Partida::Partida() {
     random_device rd;
     gen.seed(rd());
     cantBombas = 0;
+    personaje = nullptr;
+}
+Partida::~Partida() {
+    delete personaje;
 }
 
 bool Partida::cargarRecursos() {
@@ -19,9 +24,8 @@ bool Partida::cargarRecursos() {
     return true;
 }
 
-void Partida::inicializarTablero(RenderWindow& window) {
+bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
-
 
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
@@ -97,11 +101,20 @@ void Partida::inicializarTablero(RenderWindow& window) {
     bombaHud.emplace(texturaBomba);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
     bombaHud->setPosition(Vector2f(550, tamVentana.y - 60));
+
+    textoPersonaje.emplace(font, personaje->getTexto(NOMBRE), 36);
+    textoPersonaje->setPosition(Vector2f(270, tamVentana.y - 230));
+
+    return true;
 }
 
 void Partida::ejecutar(RenderWindow& window) {
     if (!cargarRecursos()) return;
-    inicializarTablero(window);
+
+    personaje = seleccionPersonaje(window);
+    if (personaje == nullptr) return;
+
+    if (!inicializarTablero(window)) return;
     reloj.restart();
 
     while (window.isOpen()) {
@@ -134,7 +147,7 @@ void Partida::ejecutar(RenderWindow& window) {
                                 bloqueVisible[i] = false;
                             } else {
                                 bloqueVisible[i] = false;
-                                int offsets[] = {-11, -10, -9, -1, 0, 1, 9, 10, 11};
+                                int offsets[] = {-14, -13, -12, -1, 0, 1, 12, 13, 14};
                                 for (int k = 0; k < 9; k++) {
                                     int idx = i + offsets[k];
                                     if (idx < 0 || idx >= (int)botones.size()) continue;
@@ -174,6 +187,7 @@ void Partida::ejecutar(RenderWindow& window) {
         window.draw(*textoTimer);
         window.draw(*textoCantidadBombas);
         window.draw(*bombaHud);
+        window.draw(*textoPersonaje);
 
         for (const auto& b : bombas) window.draw(b);
         for (size_t i = 0; i < botones.size(); i++) {
