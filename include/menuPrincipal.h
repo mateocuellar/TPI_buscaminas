@@ -17,11 +17,17 @@ private:
     std::optional<sf::RectangleShape> btnPlay;
     std::optional<sf::RectangleShape> btnRanking;
 
+    std::optional<sf::Text> sombraTitulo;
+    std::optional<sf::Text> sombraTitulo2;
     std::optional<sf::Text> titulo;
+    std::optional<sf::Text> titulo2;
     std::optional<sf::Text> textoLogin;
     std::optional<sf::Text> textoRegister;
     std::optional<sf::Text> textoNuevaPartida;
     std::optional<sf::Text> textoRanking;
+
+    sf::Texture texturaFondo;
+    std::optional<sf::Sprite> fondo;
 
     bool cargarRecursos();
     void inicializarComponentes(sf::RenderWindow& window);

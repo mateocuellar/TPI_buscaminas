@@ -73,84 +73,71 @@ TessKnot::TessKnot() : Personaje(
 
 TessKnot::~TessKnot() {
 }
-
 Personaje* seleccionPersonaje(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
-    CasperNull casper;
-    if (!casper.cargarImagen()) {
-    cout << "Error cargando la imagen del personaje" << endl;
+    Texture texturaFondo;
+    texturaFondo.loadFromFile("img/fondo_menu.png");
+
+    Sprite fondo(texturaFondo);
+    Vector2u tamFondo = texturaFondo.getSize();
+    fondo.setScale(Vector2f(
+        static_cast<float>(tamVentana.x) / static_cast<float>(tamFondo.x),
+        static_cast<float>(tamVentana.y) / static_cast<float>(tamFondo.y)
+    ));
+    fondo.setPosition(Vector2f(0,0));
+    vector<Personaje*> personajes = {
+        new CasperNull(),
+        new DunbarYunque(),
+        new TessKnot()
+    };
+
+    for (Personaje* p : personajes) {
+        if (!p->cargarImagen())
+            cout << "Error cargando la imagen de " << p->getTexto(NOMBRE) << endl;
     }
-    DunbarYunque dunbar;
-    if (!dunbar.cargarImagen()) {
-    cout << "Error cargando la imagen del personaje" << endl;
-    }
-    TessKnot tess;
-    if (!tess.cargarImagen()) {
-    cout << "Error cargando la imagen del personaje" << endl;
-    }
-    Font font;
-    if (!font.openFromFile("fuente.TTF")) {
-        cout << "Error cargando la fuente" << endl;
-    }
-    Font fontText;
-    if (!fontText.openFromFile("fuentetextos.TTF")) {
-        cout << "Error cargando la fuente" << endl;
-    }
+
+    Font font, fontText;
+    font.openFromFile("fuente.TTF");
+    fontText.openFromFile("fuentetextos.TTF");
+
     Color colorNormal(255, 107, 53);
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
 
-    float anchoBoton = 650.f;
-    float altoBoton = 250.f;
-    float anchoImg = altoBoton - 30;
-    float altoImg = altoBoton - 30;
-
-    float inicioY = tamVentana.y/2 - altoBoton/2;
-    float espaciado = 300.f;
+    float anchoBoton = 850.f, altoBoton = 300.f;
+    float anchoImg = altoBoton - 30, altoImg = altoBoton - 30;
+    float inicioY = tamVentana.y / 2 - altoBoton / 2;
+    float espaciado = 350.f;
     float margen = 30.f;
+    float primeraY = inicioY - espaciado;
 
-    /// Boton CASPER NULL
-    RectangleShape btnCasper(Vector2f(anchoBoton, altoBoton));
-    btnCasper.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY-espaciado));
-    btnCasper.setFillColor(Color(255, 107, 53));
+    vector<RectangleShape> botones;
+    vector<Text> nombres, descripciones;
+    vector<Sprite> sprites;
 
-    Text textoCasper(font, casper.getTexto(NOMBRE), 24);
-    textoCasper.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY - espaciado + margen/2));
-    Text descCasper(fontText, casper.getTexto(DESCRIPCION), 22);
-    descCasper.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY - espaciado + margen * 2));
+    for (size_t i = 0; i < personajes.size(); i++) {
+        float y = primeraY + i * espaciado;
+        float xBoton = (tamVentana.x - anchoBoton) / 2.f;
 
-    Sprite spriteCasper(casper.getTextura());
-    Vector2u tam = casper.getTextura().getSize();
-    spriteCasper.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
-    spriteCasper.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, inicioY - espaciado + margen/2));
-    /// Boton Dunbar Yunque
-    RectangleShape btnDunbar(Vector2f(anchoBoton, altoBoton));
-    btnDunbar.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY ));
-    btnDunbar.setFillColor(Color(255, 107, 53));
+        RectangleShape boton(Vector2f(anchoBoton, altoBoton));
+        boton.setPosition(Vector2f(xBoton, y));
+        boton.setFillColor(colorNormal);
+        botones.push_back(boton);
 
-    Text textoDunbar(font, dunbar.getTexto(NOMBRE), 24);
-    textoDunbar.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY + margen/2));
-    Text descDunbar(fontText, dunbar.getTexto(DESCRIPCION), 22);
-    descDunbar.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY + margen * 2));
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 30);
+        nombre.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen / 2));
+        nombres.push_back(nombre);
 
-    Sprite spriteDunbar(dunbar.getTextura());
-    spriteDunbar.setScale(Vector2f(anchoImg / tam.x, altoImg/ tam.y));
-    spriteDunbar.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, inicioY + margen/2));
-    /// Boton Tess Knot
-    RectangleShape btnTess(Vector2f(anchoBoton, altoBoton));
-    btnTess.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + espaciado));
-    btnTess.setFillColor(Color(255, 107, 53));
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 28);
+        desc.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen * 2));
+        descripciones.push_back(desc);
 
-    Text textoTess(font, tess.getTexto(NOMBRE),24);
-    textoTess.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY + espaciado + margen/2));
-    Text descTess(fontText, tess.getTexto(DESCRIPCION), 22);
-    descTess.setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f  + margen + anchoImg, inicioY + espaciado + margen * 2));
-
-    Sprite spriteTess(tess.getTextura());
-    spriteTess.setScale(Vector2f(anchoImg / tam.x, altoImg/ tam.y));
-    spriteTess.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, inicioY + espaciado + margen/2));
-
-
+        Sprite sprite(personajes[i]->getTextura());
+        Vector2u tam = personajes[i]->getTextura().getSize();
+        sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
+        sprite.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, y + margen / 2));
+        sprites.push_back(sprite);
+    }
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -159,97 +146,50 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
                 if (keyPressed->code == Keyboard::Key::Escape) {
+                    for (Personaje* p : personajes) delete p;
                     return nullptr;
                 }
             }
 
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
-                Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
-                 if (btnCasper.getGlobalBounds().contains(mousePos)) {
-                    cout << "se selecciono a Casper" << endl;
-                    CasperNull* elegido = new CasperNull();
-                    if (!elegido->cargarImagen()) {
-                        cout << "Error cargando la imagen del personaje" << endl;
+                if (mouseButton->button == Mouse::Button::Left) {
+                    Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
+                    for (size_t i = 0; i < botones.size(); i++) {
+                        if (botones[i].getGlobalBounds().contains(mousePos)) {
+                            // se devuelve el personaje ya creado y cargado
+                            for (Personaje* p : personajes)
+                                if (p != personajes[i]) delete p;
+                            cout << "se selecciono a " << personajes[i]->getTexto(NOMBRE) << endl;
+                            return personajes[i];
+                        }
                     }
-                    return elegido;
-                }
-                if (btnDunbar.getGlobalBounds().contains(mousePos)) {
-                    cout << "se selecciono a Casper" << endl;
-                    DunbarYunque* elegido = new DunbarYunque();
-                    if (!elegido->cargarImagen()) {
-                        cout << "Error cargando la imagen del personaje" << endl;
-                    }
-                    return elegido;
-                }
-                if (btnTess.getGlobalBounds().contains(mousePos)) {
-                    cout << "se selecciono a Casper" << endl;
-                    TessKnot* elegido = new TessKnot();
-                    if (!elegido->cargarImagen()) {
-                        cout << "Error cargando la imagen del personaje" << endl;
-                    }
-                    return elegido;
                 }
             }
         }
-        Vector2i mousePixel = Mouse::getPosition(window);
-        Vector2f mousePos = window.mapPixelToCoords(mousePixel);
 
-        // CASPER
-        if (btnCasper.getGlobalBounds().contains(mousePos)) {
-
-            btnCasper.setFillColor(colorHover);
-            btnCasper.setOutlineColor(colorBorde);
-            btnCasper.setOutlineThickness(3.f);
-
-        } else {
-
-            btnCasper.setFillColor(colorNormal);
-            btnCasper.setOutlineThickness(0.f);
-        }
-
-        // DUNBAR
-        if (btnDunbar.getGlobalBounds().contains(mousePos)) {
-
-            btnDunbar.setFillColor(colorHover);
-            btnDunbar.setOutlineColor(colorBorde);
-            btnDunbar.setOutlineThickness(3.f);
-
-        } else {
-
-            btnDunbar.setFillColor(colorNormal);
-            btnDunbar.setOutlineThickness(0.f);
-        }
-
-        // TESS
-        if (btnTess.getGlobalBounds().contains(mousePos)) {
-
-            btnTess.setFillColor(colorHover);
-            btnTess.setOutlineColor(colorBorde);
-            btnTess.setOutlineThickness(3.f);
-
-        } else {
-
-            btnTess.setFillColor(colorNormal);
-            btnTess.setOutlineThickness(0.f);
+        Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
+        for (size_t i = 0; i < botones.size(); i++) {
+            if (botones[i].getGlobalBounds().contains(mousePos)) {
+                botones[i].setFillColor(colorHover);
+                botones[i].setOutlineColor(colorBorde);
+                botones[i].setOutlineThickness(3.f);
+            } else {
+                botones[i].setFillColor(colorNormal);
+                botones[i].setOutlineThickness(0.f);
+            }
         }
 
         window.clear(Color(24, 33, 43));
-
-        window.draw(btnCasper);
-        window.draw(btnDunbar);
-        window.draw(btnTess);
-
-        window.draw(textoCasper);
-        window.draw(textoDunbar);
-        window.draw(textoTess);
-        window.draw(descCasper);
-        window.draw(descDunbar);
-        window.draw(descTess);
-
-        window.draw(spriteCasper);
-        window.draw(spriteDunbar);
-        window.draw(spriteTess);
+        window.draw(fondo);
+        for (size_t i = 0; i < botones.size(); i++) {
+            window.draw(botones[i]);
+            window.draw(sprites[i]);
+            window.draw(nombres[i]);
+            window.draw(descripciones[i]);
+        }
         window.display();
     }
+
+    for (Personaje* p : personajes) delete p;
     return nullptr;
 }
