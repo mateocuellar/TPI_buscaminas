@@ -9,7 +9,10 @@ Partida::Partida() {
     gen.seed(rd());
     cantBombas = 0;
     personaje = nullptr;
+    perdio = false;
+    tiempoFinal = 0;
 }
+
 Partida::~Partida() {
     delete personaje;
 }
@@ -27,13 +30,14 @@ bool Partida::cargarRecursos() {
 bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
 
+    puntuacion = 0;
+
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
     fondo->setScale(Vector2f(
         static_cast<float>(tamVentana.x) / tamFondo.x,
         static_cast<float>(tamVentana.y) / tamFondo.y
     ));
-
 
     textoTimer.emplace(font, "", 30);
     textoTimer->setPosition(Vector2f(150, tamVentana.y - 100));
@@ -42,10 +46,25 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoCantidadBombas.emplace(font, "", 30);
     textoCantidadBombas->setPosition(Vector2f(150, tamVentana.y - 60));
 
+    ///para gamerover
+    capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
+    capaOscura.setFillColor(Color(0, 0, 0, 180));
 
-    int cantCuadradosX = 13;
-    int cantCuadradosY = 13;
-    float tamCuadrado = 60.f;
+    textoGameOver.emplace(font, "GAME OVER", 80);
+    textoGameOver->setFillColor(Color::Red);
+    FloatRect limites = textoGameOver->getLocalBounds();
+    textoGameOver->setOrigin(Vector2f(
+        limites.position.x + limites.size.x / 2.f,
+        limites.position.y + limites.size.y / 2.f
+    ));
+    textoGameOver->setPosition(Vector2f(tamVentana.x / 2.f, tamVentana.y / 2.f));
+
+    textoPuntuacion.emplace(font, "", 30);
+    textoPuntuacion->setFillColor(Color::White);
+
+    int cantCuadradosX = 20;
+    float tamCuadrado = 75.f;
+    int cantCuadradosY = 10;
     float separacion = 3.f;
     float paso = tamCuadrado + separacion;
 
@@ -68,7 +87,6 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     bloqueVisible.assign(botones.size(), true);
     banderaActiva.assign(botones.size(), false);
 
-
     uniform_int_distribution<int> distBomb(5, 15);
     cantBombas = distBomb(gen);
     textoCantidadBombas->setString("CANTIDAD DE BOMBAS: " + to_string(cantBombas));
@@ -79,8 +97,8 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     indicesBombas.assign(indices.begin(), indices.begin() + cantBombas);
 
     Vector2u tamBomba = texturaBomba.getSize();
-    float escalaX = 60.f / tamBomba.x;
-    float escalaY = 60.f / tamBomba.y;
+    float escalaX = tamCuadrado / tamBomba.x;
+    float escalaY = tamCuadrado / tamBomba.y;
 
     for (int idx : indicesBombas) {
         Sprite b(texturaBomba);
@@ -92,7 +110,6 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     bandera.emplace(texturaBandera);
     bandera->setScale({escalaX, escalaY});
 
-    // HUD
     hud.emplace(texturaHud);
     Vector2u tamHud = texturaHud.getSize();
     hud->setScale({1920.f / tamHud.x, 250.f / tamHud.y});
@@ -131,6 +148,10 @@ void Partida::ejecutar(RenderWindow& window) {
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
                 Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
+                if (perdio) {
+                    return;
+                }
+
                 if (mouseButton->button == Mouse::Button::Left) {
                     for (size_t i = 0; i < botones.size(); i++) {
                         if (botones[i].getGlobalBounds().contains(mousePos) && !banderaActiva[i]) {
@@ -143,11 +164,15 @@ void Partida::ejecutar(RenderWindow& window) {
                             }
 
                             if (clickeoBomba) {
-                                cout << "game over" << endl;
-                                bloqueVisible[i] = false;
+                                perdio = true;
+                                tiempoFinal = reloj.getElapsedTime().asSeconds();
+                                for (int j = 0; j < indicesBombas.size(); j++) {
+                                    bloqueVisible[indicesBombas[j]] = false;
+                                }
                             } else {
+                                puntuacion += 2;
                                 bloqueVisible[i] = false;
-                                int offsets[] = {-14, -13, -12, -1, 0, 1, 12, 13, 14};
+                                int offsets[] = {-11, -10, -9, -1, 0, 1, 9, 10, 11};
                                 for (int k = 0; k < 9; k++) {
                                     int idx = i + offsets[k];
                                     if (idx < 0 || idx >= (int)botones.size()) continue;
@@ -176,11 +201,12 @@ void Partida::ejecutar(RenderWindow& window) {
             }
         }
 
-        float segundos = reloj.getElapsedTime().asSeconds();
-        textoTimer->setString("TIEMPO: " + to_string((int)segundos));
+        if (!perdio) {
+            float segundos = reloj.getElapsedTime().asSeconds();
+            textoTimer->setString("TIEMPO: " + to_string((int)segundos));
+        }
 
         window.clear(Color(24, 33, 43));
-
 
         window.draw(*fondo);
         window.draw(*hud);
@@ -199,6 +225,18 @@ void Partida::ejecutar(RenderWindow& window) {
                 window.draw(*bandera);
             }
         }
+
+        if (perdio) {
+
+            textoPuntuacion->setString("Puntuacion total: " + to_string(puntuacion));
+            textoPuntuacion->setPosition(Vector2f((window.getSize().x - textoPuntuacion->getLocalBounds().size.x) / 2.f, window.getSize().y / 2.f + 50));
+
+            window.draw(capaOscura);
+            window.draw(*textoGameOver);
+            window.draw(*textoTimer);
+            window.draw(*textoPuntuacion);
+        }
+
         window.display();
     }
 }

@@ -14,6 +14,7 @@ class Personaje;
 using namespace std;
 using namespace sf;
 
+
 class Partida {
 private:
     mt19937 gen;
@@ -42,6 +43,15 @@ private:
     vector<bool> bloqueVisible;
     vector<bool> banderaActiva;
     vector<int> indicesBombas;
+
+    bool perdio;
+    float tiempoFinal;
+    int puntuacion = 0;
+
+    RectangleShape capaOscura;
+    optional<Text> textoGameOver;
+    optional<Text> textoPuntuacion;
+
 
     Clock reloj;
     int cantBombas;
