@@ -16,6 +16,7 @@ private:
     std::optional<sf::RectangleShape> btnRegister;
     std::optional<sf::RectangleShape> btnPlay;
     std::optional<sf::RectangleShape> btnRanking;
+    std::optional<sf::RectangleShape> btnSalir;
 
     std::optional<sf::Text> sombraTitulo;
     std::optional<sf::Text> sombraTitulo2;
@@ -25,6 +26,7 @@ private:
     std::optional<sf::Text> textoRegister;
     std::optional<sf::Text> textoNuevaPartida;
     std::optional<sf::Text> textoRanking;
+    std::optional<sf::Text> textoSalir;
 
     sf::Texture texturaFondo;
     std::optional<sf::Sprite> fondo;

@@ -6,12 +6,15 @@
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int resistencia, string rutaImagen) {
+Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
+    for (int i = 0; i < CANT_COLORES&& i < (int)colores.size(); i++) {
+        vecColores[i] = colores[i];
+    }
     this->vida = vida;
-    this->resistencia = resistencia;
+    this->armadura = armadura;
     this->rutaImagen = rutaImagen;
 }
 
@@ -19,6 +22,17 @@ Personaje::~Personaje() {
 }
 string Personaje::getTexto(TextoPersonaje tipo) const {
     return vecTextos[tipo];
+}
+int Personaje::getVida() const{
+    return vida;
+}
+int Personaje::getArmadura() const{
+    return armadura;
+}
+
+
+Color Personaje::getColor(ColoresPersonaje color) const {
+    return vecColores[color];
 }
 
 bool Personaje::cargarImagen() {
@@ -30,53 +44,58 @@ const Texture& Personaje::getTextura() const {
 
 CasperNull::CasperNull() : Personaje(
     {"Casper Null",
-     "Seek & destroy",
-     "Desarmador",
+     "SEEK AND DESTROY",
+     "DESARMADOR",
      "Filtra la informacion falsa de las Minas\n"
      "de Radiacion y muestra el numero real. \n"
      "Tiene un intento de bandera erronea por \n"
      "nivel sin penalizacion. \n\n"
      "Es fragil: 1 vida menos y una Mina de Fuego \n"
      "lo elimina al instante.\n"},
-    100, 10, "imagenes/personaje-casper-null.png") {
+    3, 1, "imagenes/personaje-casper-null.png",
+    {Color(225, 85, 40), Color(220, 175, 60)}) {
 }
 
 CasperNull::~CasperNull() {
 }
 DunbarYunque::DunbarYunque() : Personaje(
     {"Dunbar Yunque",
-    "Mitigar",
-    "Escudo termico",
+    "MITIGAR",
+    "ESCUDO TÉRMICO",
     "El escudo absorbe por completo el impacto \n"
     "de minas comunes y de fuego, \n"
     "y es inmune al hielo. \n"
     "Pero el tiempo limite se reduce 25% \n"
     "y cada bandera mal puesta le baja el \n"
     "puntaje del ranking."},
-    100, 20, "imagenes/personaje-dunbar-yunque.png"){
+    3, 4, "imagenes/personaje-dunbar-yunque.png",
+    {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
-
 DunbarYunque::~DunbarYunque() {
 }
 TessKnot::TessKnot() : Personaje(
     {"Tess Knot",
-     "Destreza analitica",
-     "Escaneo",
+     "DESTREZA ANALÍTICA",
+     "ESCANEO",
      "Su escaneo avisa si una ruta puede causar \n"
      "reaccion en cadena. \n"
      "No tiene defensas: una mina comun \n"
      "le resta 2 vidas, \n"
      "no es inmune a ningun estado, \n"
      "y el escaneo tiene 5 turnos de recarga."},
-    100, 0, "imagenes/personaje-tess-knot.png") {
+    4, 3, "imagenes/personaje-tess-knot.png",
+    {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
-
 TessKnot::~TessKnot() {
 }
 Personaje* seleccionPersonaje(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
     Texture texturaFondo;
     texturaFondo.loadFromFile("img/fondo_menu.png");
+
+    RectangleShape capaOscura;
+    capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
+    capaOscura.setFillColor(Color(0, 0, 0, 80));
 
     Sprite fondo(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
@@ -128,7 +147,7 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         nombre.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen / 2));
         nombres.push_back(nombre);
 
-        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 28);
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 24);
         desc.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen * 2));
         descripciones.push_back(desc);
 
@@ -152,11 +171,14 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
             }
 
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
+                if (mouseButton->button == Mouse::Button::Right) {
+                    for (Personaje* p : personajes) delete p;
+                    return nullptr;
+                }
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
                     for (size_t i = 0; i < botones.size(); i++) {
                         if (botones[i].getGlobalBounds().contains(mousePos)) {
-                            // se devuelve el personaje ya creado y cargado
                             for (Personaje* p : personajes)
                                 if (p != personajes[i]) delete p;
                             cout << "se selecciono a " << personajes[i]->getTexto(NOMBRE) << endl;
@@ -181,6 +203,8 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
 
         window.clear(Color(24, 33, 43));
         window.draw(fondo);
+        window.draw(capaOscura);
+
         for (size_t i = 0; i < botones.size(); i++) {
             window.draw(botones[i]);
             window.draw(sprites[i]);

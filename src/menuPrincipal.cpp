@@ -47,6 +47,10 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnRanking->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 3)));
     btnRanking->setFillColor(colorBtn);
 
+    btnSalir.emplace(Vector2f(anchoBoton/2-30, altoBoton*0.8));
+    btnSalir->setPosition(Vector2f(0, 0));
+    btnSalir->setFillColor(Color(200,0,0, 100));
+
 
     titulo.emplace(font, "MINESWEEPER:", 94);
     titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, 180.f));
@@ -89,6 +93,13 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         (tamVentana.x - boundsRanking.size.x) / 2.f,
         btnRanking->getPosition().y + (altoBoton - boundsRanking.size.y) / 2.f - boundsRanking.position.y
     ));
+    textoSalir.emplace(font, "Salir", 28);
+    textoSalir->setFillColor(Color(255,255,255,200));
+    FloatRect boundsSalir= textoSalir->getGlobalBounds();
+    textoSalir->setPosition(Vector2f(
+        (boundsSalir.size.x) / 2.f,
+        btnSalir->getPosition().y + (altoBoton*0.8 - boundsSalir.size.y) / 2.f - boundsSalir.position.y
+    ));
 }
 
 void menuPrincipal::ejecutar(RenderWindow& window) {
@@ -98,7 +109,9 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     Color colorBtn(255, 107, 53);
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
+
     vector<RectangleShape*> botones;
+
     botones.push_back(&*btnLogin);
     botones.push_back(&*btnRegister);
     botones.push_back(&*btnPlay);
@@ -140,6 +153,9 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Clic en: Ranking" << endl;
                     }
+                    if (btnSalir->getGlobalBounds().contains(mousePos)) {
+                        window.close();
+                    }
                 }
             }
         }
@@ -164,6 +180,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.draw(*btnRegister);
         window.draw(*btnPlay);
         window.draw(*btnRanking);
+        window.draw(*btnSalir);
 
         window.draw(*sombraTitulo);
         window.draw(*sombraTitulo2);
@@ -175,9 +192,9 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.draw(*textoRegister);
         window.draw(*textoNuevaPartida);
         window.draw(*textoRanking);
+        window.draw(*textoSalir);
 
 
         window.display();
     }
 }
-

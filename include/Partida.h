@@ -26,16 +26,27 @@ private:
     Texture texturaHud;
     Texture texturaBloque;
     Texture texturaFondo;
+    Texture texturaVida;
+    Texture texturaArmadura;
 
     Personaje* personaje;
     optional<Text> textoPersonaje;
+    optional<Text> textoHablidad;
+    optional<Text> textoPasiva;
 
     optional<Sprite> fondo;
     optional<Sprite> hud;
     optional<Sprite> bandera;
     optional<Sprite> bombaHud;
+    optional<Sprite> vidaHud;
+    optional<Sprite> armaduraHud;
+
     optional<Text> textoTimer;
     optional<Text> textoCantidadBombas;
+    optional<Text> textoVidaActual;
+    optional<Text> textoArmaduraActual;
+    optional<Text> textoStatus;
+    optional<Text> textoCommands;
 
 
     vector<Sprite> botones;

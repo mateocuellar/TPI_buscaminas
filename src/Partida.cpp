@@ -24,6 +24,8 @@ bool Partida::cargarRecursos() {
     if (!texturaHud.loadFromFile("img/hud.png")) return false;
     if (!texturaBloque.loadFromFile("img/bloque.png")) return false;
     if (!texturaFondo.loadFromFile("img/fondo.png")) return false;
+    if (!texturaVida.loadFromFile("img/spritesHp/corazon_lleno_256.png")) return false;
+    if (!texturaArmadura.loadFromFile("img/spritesHp/armadura_llena_256.png")) return false;
     return true;
 }
 
@@ -62,10 +64,10 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
 
-    int cantCuadradosX = 20;
+    int cantCuadradosX = 21;
     float tamCuadrado = 75.f;
-    int cantCuadradosY = 10;
-    float separacion = 3.f;
+    int cantCuadradosY = 11;
+    float separacion = 0.f;
     float paso = tamCuadrado + separacion;
 
     float anchoTablero = cantCuadradosX * tamCuadrado + (cantCuadradosX - 1) * separacion;
@@ -117,10 +119,39 @@ bool Partida::inicializarTablero(RenderWindow& window) {
 
     bombaHud.emplace(texturaBomba);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
-    bombaHud->setPosition(Vector2f(550, tamVentana.y - 60));
+    bombaHud->setPosition(Vector2f(550, tamVentana.y - 70));
+
+    vidaHud.emplace(texturaVida);
+    Vector2u tamVidaHud = texturaVida.getSize();
+    vidaHud->setPosition(Vector2f(270, tamVentana.y - 170));
+    vidaHud->setScale({escalaX * 0.3f, escalaY * 0.3f});
+
+    textoVidaActual.emplace(font, to_string(personaje->getVida()), 30);
+    textoVidaActual->setPosition(Vector2f(270 + 60, tamVentana.y - 170));
+
+    armaduraHud.emplace(texturaArmadura);
+    armaduraHud->setScale({escalaX * 0.3f, escalaY * 0.3f});
+    armaduraHud->setPosition(Vector2f(400, tamVentana.y - 170));
+
+    textoArmaduraActual.emplace(font, to_string(personaje->getArmadura()),30);
+    textoArmaduraActual->setPosition(Vector2f(400 + 60, tamVentana.y - 170));
 
     textoPersonaje.emplace(font, personaje->getTexto(NOMBRE), 36);
     textoPersonaje->setPosition(Vector2f(270, tamVentana.y - 230));
+
+    textoHablidad.emplace(font, personaje->getTexto(HABILIDAD), 36);
+    textoHablidad->setPosition(Vector2f(750, tamVentana.y - 180));
+    textoHablidad->setFillColor(personaje->getColor(colorHabilidad));
+
+    textoPasiva.emplace(font, personaje->getTexto(PASIVA), 36);
+    textoPasiva->setPosition(Vector2f(750, tamVentana.y - 140));
+    textoPasiva->setFillColor(personaje->getColor(colorPasiva));
+
+    textoStatus.emplace(font, "ESTADO", 36);
+    textoStatus->setPosition(Vector2f(800, tamVentana.y - 240));
+    textoCommands.emplace(font, "COMANDOS", 36);
+    textoCommands->setPosition(Vector2f(1280, tamVentana.y - 240));
+
 
     return true;
 }
@@ -172,7 +203,7 @@ void Partida::ejecutar(RenderWindow& window) {
                             } else {
                                 puntuacion += 2;
                                 bloqueVisible[i] = false;
-                                int offsets[] = {-11, -10, -9, -1, 0, 1, 9, 10, 11};
+                                int offsets[] = {-12, -11, -10, -1, 0, 1, 10, 11, 12};
                                 for (int k = 0; k < 9; k++) {
                                     int idx = i + offsets[k];
                                     if (idx < 0 || idx >= (int)botones.size()) continue;
@@ -209,11 +240,21 @@ void Partida::ejecutar(RenderWindow& window) {
         window.clear(Color(24, 33, 43));
 
         window.draw(*fondo);
+
         window.draw(*hud);
         window.draw(*textoTimer);
-        window.draw(*textoCantidadBombas);
         window.draw(*bombaHud);
+        window.draw(*textoCantidadBombas);
+        window.draw(*vidaHud);
+        window.draw(*textoVidaActual);
+        window.draw(*armaduraHud);
+        window.draw(*textoArmaduraActual);
+
+        window.draw(*textoStatus);
+        window.draw(*textoCommands);
         window.draw(*textoPersonaje);
+        window.draw(*textoHablidad);
+        window.draw(*textoPasiva);
 
         for (const auto& b : bombas) window.draw(b);
         for (size_t i = 0; i < botones.size(); i++) {
