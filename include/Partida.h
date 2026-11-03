@@ -14,11 +14,9 @@ class Personaje;
 using namespace std;
 using namespace sf;
 
-
 class Partida {
 private:
     mt19937 gen;
-
 
     Font font;
     Texture texturaBomba;
@@ -33,6 +31,8 @@ private:
     optional<Text> textoPersonaje;
     optional<Text> textoHablidad;
     optional<Text> textoPasiva;
+    optional<Text> textoStatus;
+    optional<Text> textoCommands;
 
     optional<Sprite> fondo;
     optional<Sprite> hud;
@@ -40,13 +40,11 @@ private:
     optional<Sprite> bombaHud;
     optional<Sprite> vidaHud;
     optional<Sprite> armaduraHud;
-
+    optional<Sprite> spritePersonaje;
     optional<Text> textoTimer;
     optional<Text> textoCantidadBombas;
     optional<Text> textoVidaActual;
     optional<Text> textoArmaduraActual;
-    optional<Text> textoStatus;
-    optional<Text> textoCommands;
 
 
     vector<Sprite> botones;
@@ -57,7 +55,14 @@ private:
 
     bool perdio;
     float tiempoFinal;
-    int puntuacion = 0;
+    int puntuacion;
+
+    bool personajeColocado;
+    int cursorCol;
+    int cursorFila;
+    int cantCuadradosX;
+    int cantCuadradosY;
+    float tamCuadrado;
 
     RectangleShape capaOscura;
     optional<Text> textoGameOver;
@@ -69,6 +74,7 @@ private:
 
     bool cargarRecursos();
     bool inicializarTablero(RenderWindow& window);
+    void destapar(int idx);
 
 public:
     Partida();

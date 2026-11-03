@@ -17,13 +17,17 @@ protected:
     int vida;
     int armadura;
     string rutaImagen;
+    string rutaImagenTexturaIdle;
     Texture textura;
+    Texture texturaIdle;
     Color vecColores[CANT_COLORES];
-
 public:
-    Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, const vector<Color>& colores);
-    bool cargarImagen();
+    Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, string rutaImagenTexturaIdle, const vector<Color>& colores);
+
+    bool cargarTexturasPersonajes();
+
     const Texture& getTextura() const;
+    const Texture& getTexturaIdle() const;
 
     string getTexto(TextoPersonaje tipo) const;
     int getVida() const;

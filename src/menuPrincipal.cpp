@@ -9,9 +9,82 @@ menuPrincipal::menuPrincipal() {
 
 bool menuPrincipal::cargarRecursos() {
     if (!texturaFondo.loadFromFile("img/fondo_menu.png")) return false;
+    if (!texturaHoja.loadFromFile("img/particulas/hoja1.png")) return false;
+    if (!texturaPolvo.loadFromFile("img/particulas/polvo_grande.png")) return false;
     return font.openFromFile("fuente.TTF");
 }
 
+void menuPrincipal::crearParticulas(RenderWindow& window) {
+    Vector2u tamVentana = window.getSize();
+
+    random_device rd;
+    mt19937 gen(rd());
+
+    uniform_real_distribution<float> posX(0.f, static_cast<float>(tamVentana.x));
+    uniform_real_distribution<float> posY(0.f, static_cast<float>(tamVentana.y));
+
+    uniform_real_distribution<float> velX(20.f, 80.f);
+    uniform_real_distribution<float> velY(10.f, 40.f);
+
+    uniform_real_distribution<float> rotacion(-90.f, 90.f);
+
+    uniform_real_distribution<float> escalaHoja(0.15f, 0.35f);
+    uniform_real_distribution<float> escalaPolvo(0.05f, 0.12f);
+
+    particulas.clear();
+
+    for (int i = 0; i < 25; i++) {
+        Particula p(i % 2 == 0 ? texturaHoja : texturaPolvo);
+
+        Vector2u tamTextura = texturaHoja.getSize();
+
+        p.sprite.setOrigin(Vector2f(
+            tamTextura.x / 2.f,
+            tamTextura.y / 2.f
+        ));
+
+        float escala = escalaHoja(gen);
+
+        p.sprite.setScale(Vector2f(escala*3, escala*3));
+
+        p.sprite.setPosition(Vector2f(
+            posX(gen),
+            posY(gen)
+        ));
+
+        p.velocidad = Vector2f(
+            velX(gen),
+            velY(gen)
+        );
+
+        p.velRotacion = rotacion(gen);
+
+        particulas.push_back(p);
+    }
+}
+
+void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
+    Vector2u tamVentana = window.getSize();
+
+    static random_device rd;
+    static mt19937 gen(rd());
+
+    uniform_real_distribution<float> nuevaX(0.f, static_cast<float>(tamVentana.x));
+
+    for (size_t i = 0; i < particulas.size(); i++) {
+        particulas[i].sprite.move(particulas[i].velocidad * dt);
+        particulas[i].sprite.rotate(degrees(particulas[i].velRotacion * dt));
+
+        Vector2f pos = particulas[i].sprite.getPosition();
+
+        if (pos.x > tamVentana.x + 50.f) {
+            particulas[i].sprite.setPosition(Vector2f(-50.f, pos.y));
+        }
+        if (pos.y > tamVentana.y + 50.f) {
+            particulas[i].sprite.setPosition(Vector2f(nuevaX(gen), -50.f));
+        }
+    }
+}
 
 void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
@@ -50,7 +123,6 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnSalir.emplace(Vector2f(anchoBoton/2-30, altoBoton*0.8));
     btnSalir->setPosition(Vector2f(0, 0));
     btnSalir->setFillColor(Color(200,0,0, 100));
-
 
     titulo.emplace(font, "MINESWEEPER:", 94);
     titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, 180.f));
@@ -93,6 +165,7 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         (tamVentana.x - boundsRanking.size.x) / 2.f,
         btnRanking->getPosition().y + (altoBoton - boundsRanking.size.y) / 2.f - boundsRanking.position.y
     ));
+
     textoSalir.emplace(font, "Salir", 28);
     textoSalir->setFillColor(Color(255,255,255,200));
     FloatRect boundsSalir= textoSalir->getGlobalBounds();
@@ -105,6 +178,7 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
 void menuPrincipal::ejecutar(RenderWindow& window) {
     if (!cargarRecursos()) return;
     inicializarComponentes(window);
+    crearParticulas(window);
 
     Color colorBtn(255, 107, 53);
     Color colorHover(210, 75, 30);
@@ -118,6 +192,9 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     botones.push_back(&*btnRanking);
 
     while (window.isOpen()) {
+        float dt = relojParticulas.restart().asSeconds();
+        actualizarParticulas(dt, window);
+
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>())
                 window.close();
@@ -153,12 +230,14 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Clic en: Ranking" << endl;
                     }
+
                     if (btnSalir->getGlobalBounds().contains(mousePos)) {
                         window.close();
                     }
                 }
             }
         }
+
         Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 
         for (size_t i = 0; i < botones.size(); i++) {
@@ -175,6 +254,10 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.clear(Color(24, 33, 43));
 
         window.draw(*fondo);
+
+        for (size_t i = 0; i < particulas.size(); i++) {
+            window.draw(particulas[i].sprite);
+        }
 
         window.draw(*btnLogin);
         window.draw(*btnRegister);
@@ -193,7 +276,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.draw(*textoNuevaPartida);
         window.draw(*textoRanking);
         window.draw(*textoSalir);
-
 
         window.display();
     }

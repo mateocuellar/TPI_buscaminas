@@ -7,10 +7,19 @@ using namespace sf;
 Partida::Partida() {
     random_device rd;
     gen.seed(rd());
-    cantBombas = 0;
     personaje = nullptr;
     perdio = false;
+
+    cantBombas = 0;
     tiempoFinal = 0;
+    puntuacion = 0;
+
+    personajeColocado = false;
+    cursorCol = 0;
+    cursorFila = 0;
+    cantCuadradosX = 21;
+    cantCuadradosY = 11;
+    tamCuadrado = 75.f;
 }
 
 Partida::~Partida() {
@@ -29,19 +38,65 @@ bool Partida::cargarRecursos() {
     return true;
 }
 
+bool Personaje::cargarTexturasPersonajes() {
+    if(!textura.loadFromFile(rutaImagen)) return false;
+    if(!texturaIdle.loadFromFile(rutaImagenTexturaIdle)) return false;
+    return true;
+}
+
+void Partida::destapar(int idx) {
+    if (banderaActiva[idx]) return;
+
+    bool clickeoBomba = false;
+    for (int j = 0; j < indicesBombas.size(); j++) {
+        if (idx == indicesBombas[j]) {
+            clickeoBomba = true;
+            break;
+        }
+    }
+
+    if (clickeoBomba) {
+        perdio = true;
+        tiempoFinal = reloj.getElapsedTime().asSeconds();
+        for (int j = 0; j < indicesBombas.size(); j++) {
+            bloqueVisible[indicesBombas[j]] = false;
+        }
+    } else {
+        puntuacion += 2;
+        bloqueVisible[idx] = false;
+        int offsets[] = {-12, -11, -10, -1, 0, 1, 10, 11, 12};
+        for (int k = 0; k < 9; k++) {
+            int vecino = idx + offsets[k];
+            if (vecino < 0 || vecino >= (int)botones.size()) continue;
+
+            bool esBomba = false;
+            for (int j = 0; j < indicesBombas.size(); j++) {
+                if (vecino == indicesBombas[j]) {
+                    esBomba = true;
+                    break;
+                }
+            }
+            if (!esBomba) bloqueVisible[vecino] = false;
+        }
+    }
+}
+
 bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
 
-    puntuacion = 0;
-
+    spritePersonaje.emplace(personaje->getTexturaIdle());
+    Vector2u tamPj = personaje->getTexturaIdle().getSize();
+    spritePersonaje->setScale({tamCuadrado / tamPj.x, tamCuadrado / tamPj.y});
     fondo.emplace(texturaFondo);
+
     Vector2u tamFondo = texturaFondo.getSize();
+
     fondo->setScale(Vector2f(
         static_cast<float>(tamVentana.x) / tamFondo.x,
         static_cast<float>(tamVentana.y) / tamFondo.y
     ));
 
-    textoTimer.emplace(font, "", 30);
+    textoTimer.emplace(font, "TIEMPO: 0:00", 30);
     textoTimer->setPosition(Vector2f(150, tamVentana.y - 100));
     textoTimer->setFillColor(Color::White);
 
@@ -64,14 +119,8 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
 
-    int cantCuadradosX = 21;
-    float tamCuadrado = 75.f;
-    int cantCuadradosY = 11;
-    float separacion = 0.f;
-    float paso = tamCuadrado + separacion;
-
-    float anchoTablero = cantCuadradosX * tamCuadrado + (cantCuadradosX - 1) * separacion;
-    float altoTablero = cantCuadradosY * tamCuadrado + (cantCuadradosY - 1) * separacion;
+    float anchoTablero = cantCuadradosX * tamCuadrado + (cantCuadradosX - 1);
+    float altoTablero = cantCuadradosY * tamCuadrado + (cantCuadradosY - 1);
     float inicioX = (tamVentana.x - anchoTablero) / 2.f;
     float altoDisponible = 830.f;
     float inicioY = (altoDisponible - altoTablero) / 2.f;
@@ -81,7 +130,7 @@ bool Partida::inicializarTablero(RenderWindow& window) {
             Sprite boton(texturaBloque);
             Vector2u tam = texturaBloque.getSize();
             boton.setScale({tamCuadrado / tam.x, tamCuadrado / tam.y});
-            boton.setPosition({inicioX + i * paso, inicioY + j * paso});
+            boton.setPosition({inicioX + i * tamCuadrado, inicioY + j * tamCuadrado});
             botones.push_back(boton);
         }
     }
@@ -163,78 +212,68 @@ void Partida::ejecutar(RenderWindow& window) {
     if (personaje == nullptr) return;
 
     if (!inicializarTablero(window)) return;
-    reloj.restart();
 
     while (window.isOpen()) {
-        while (const optional event = window.pollEvent()) {
+                while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>())
                 window.close();
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
-                if (keyPressed->code == Keyboard::Key::Escape) {
+                if (keyPressed->code == Keyboard::Key::Escape || perdio) {
+                    window.setMouseCursorVisible(true);
                     return;
+                }
+
+                if (personajeColocado) {
+                    if (keyPressed->code == Keyboard::Key::W && cursorFila > 0){
+                        cursorFila--;
+                    }
+                    if (keyPressed->code == Keyboard::Key::S && cursorFila < cantCuadradosY - 1){
+                        cursorFila++;
+                    }
+                    if (keyPressed->code == Keyboard::Key::A && cursorCol > 0){
+                        cursorCol--;
+                    }
+                    if (keyPressed->code == Keyboard::Key::D && cursorCol < cantCuadradosX - 1){
+                        cursorCol++;
+                    }
+
+                    int idx = cursorCol * cantCuadradosY + cursorFila;
+
+                    if (keyPressed->code == Keyboard::Key::Space)
+                        destapar(idx);
+                    if (keyPressed->code == Keyboard::Key::F)
+                        banderaActiva[idx] = !banderaActiva[idx];
                 }
             }
 
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
-                Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
-
                 if (perdio) {
+                    window.setMouseCursorVisible(true);
                     return;
                 }
 
-                if (mouseButton->button == Mouse::Button::Left) {
-                    for (size_t i = 0; i < botones.size(); i++) {
-                        if (botones[i].getGlobalBounds().contains(mousePos) && !banderaActiva[i]) {
-                            bool clickeoBomba = false;
-                            for (int j = 0; j < indicesBombas.size(); j++) {
-                                if ((int)i == indicesBombas[j]) {
-                                    clickeoBomba = true;
-                                    break;
-                                }
-                            }
+                if (mouseButton->button == Mouse::Button::Left && !personajeColocado) {
+                    Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-                            if (clickeoBomba) {
-                                perdio = true;
-                                tiempoFinal = reloj.getElapsedTime().asSeconds();
-                                for (int j = 0; j < indicesBombas.size(); j++) {
-                                    bloqueVisible[indicesBombas[j]] = false;
-                                }
-                            } else {
-                                puntuacion += 2;
-                                bloqueVisible[i] = false;
-                                int offsets[] = {-12, -11, -10, -1, 0, 1, 10, 11, 12};
-                                for (int k = 0; k < 9; k++) {
-                                    int idx = i + offsets[k];
-                                    if (idx < 0 || idx >= (int)botones.size()) continue;
-
-                                    bool esBomba = false;
-                                    for (int j = 0; j < indicesBombas.size(); j++) {
-                                        if (idx == indicesBombas[j]) {
-                                            esBomba = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!esBomba) bloqueVisible[idx] = false;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (mouseButton->button == Mouse::Button::Right) {
                     for (size_t i = 0; i < botones.size(); i++) {
                         if (botones[i].getGlobalBounds().contains(mousePos)) {
-                            banderaActiva[i] = !banderaActiva[i];
+                            cursorCol = i / cantCuadradosY;
+                            cursorFila = i % cantCuadradosY;
+                            personajeColocado = true;
+                            window.setMouseCursorVisible(false);
+                            destapar(i);
+                            reloj.restart();
+                            break;
                         }
                     }
                 }
             }
         }
 
-        if (!perdio) {
+        if (!perdio && personajeColocado) {
             float segundos = reloj.getElapsedTime().asSeconds();
-            textoTimer->setString("TIEMPO: " + to_string((int)segundos));
+            textoTimer->setString("TIEMPO: 0:" + to_string((int)segundos));
         }
 
         window.clear(Color(24, 33, 43));
@@ -267,8 +306,13 @@ void Partida::ejecutar(RenderWindow& window) {
             }
         }
 
-        if (perdio) {
+        if (personajeColocado) {
+            int idxPj = cursorCol * cantCuadradosY + cursorFila;
+            spritePersonaje->setPosition(botones[idxPj].getPosition());
+            window.draw(*spritePersonaje);
+        }
 
+        if (perdio) {
             textoPuntuacion->setString("Puntuacion total: " + to_string(puntuacion));
             textoPuntuacion->setPosition(Vector2f((window.getSize().x - textoPuntuacion->getLocalBounds().size.x) / 2.f, window.getSize().y / 2.f + 50));
 

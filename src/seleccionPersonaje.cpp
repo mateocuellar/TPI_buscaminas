@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, const vector<Color>& colores) {
+Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, string rutaImagenTexturaIdle,const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
@@ -16,6 +16,7 @@ Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string
     this->vida = vida;
     this->armadura = armadura;
     this->rutaImagen = rutaImagen;
+    this->rutaImagenTexturaIdle = rutaImagenTexturaIdle;
 }
 
 Personaje::~Personaje() {
@@ -35,11 +36,11 @@ Color Personaje::getColor(ColoresPersonaje color) const {
     return vecColores[color];
 }
 
-bool Personaje::cargarImagen() {
-    return textura.loadFromFile(rutaImagen);
-}
 const Texture& Personaje::getTextura() const {
     return textura;
+}
+const Texture& Personaje::getTexturaIdle() const {
+    return texturaIdle;
 }
 
 CasperNull::CasperNull() : Personaje(
@@ -52,7 +53,9 @@ CasperNull::CasperNull() : Personaje(
      "nivel sin penalizacion. \n\n"
      "Es fragil: 1 vida menos y una Mina de Fuego \n"
      "lo elimina al instante.\n"},
-    3, 1, "imagenes/personaje-casper-null.png",
+    3, 1,
+    "imagenes/personaje-casper-null.png",
+    "img/texturaPersonajes/casper_null_64.png",
     {Color(225, 85, 40), Color(220, 175, 60)}) {
 }
 
@@ -68,7 +71,9 @@ DunbarYunque::DunbarYunque() : Personaje(
     "Pero el tiempo limite se reduce 25% \n"
     "y cada bandera mal puesta le baja el \n"
     "puntaje del ranking."},
-    3, 4, "imagenes/personaje-dunbar-yunque.png",
+    3, 4,
+    "imagenes/personaje-dunbar-yunque.png",
+    "img/texturaPersonajes/dunbar_yunque_64.png",
     {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
 DunbarYunque::~DunbarYunque() {
@@ -83,15 +88,29 @@ TessKnot::TessKnot() : Personaje(
      "le resta 2 vidas, \n"
      "no es inmune a ningun estado, \n"
      "y el escaneo tiene 5 turnos de recarga."},
-    4, 3, "imagenes/personaje-tess-knot.png",
+    4, 3,
+    "imagenes/personaje-tess-knot.png",
+    "img/texturaPersonajes/tess_knot_64.png",
     {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
 TessKnot::~TessKnot() {
 }
+
+void borrarPersonajes(vector<Personaje*>& personajes) {
+    for (size_t i = 0; i < personajes.size(); i++) {
+        delete personajes[i];
+    }
+}
+
 Personaje* seleccionPersonaje(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
+
     Texture texturaFondo;
-    texturaFondo.loadFromFile("img/fondo_menu.png");
+    Font font, fontText;
+
+    if (!texturaFondo.loadFromFile("img/fondo_menu.png")) return nullptr;
+    if (!font.openFromFile("fuente.TTF")) return nullptr;
+    if (!fontText.openFromFile("fuentetextos.TTF")) return nullptr;
 
     RectangleShape capaOscura;
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
@@ -110,14 +129,13 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         new TessKnot()
     };
 
-    for (Personaje* p : personajes) {
-        if (!p->cargarImagen())
-            cout << "Error cargando la imagen de " << p->getTexto(NOMBRE) << endl;
+    for (size_t i = 0; i < personajes.size(); i++) {
+        if (!personajes[i]->cargarTexturasPersonajes()) {
+            cout << "Error cargando recursos de " << personajes[i]->getTexto(NOMBRE) << endl;
+            borrarPersonajes(personajes);
+            return nullptr;
+        }
     }
-
-    Font font, fontText;
-    font.openFromFile("fuente.TTF");
-    fontText.openFromFile("fuentetextos.TTF");
 
     Color colorNormal(255, 107, 53);
     Color colorHover(210, 75, 30);
@@ -165,14 +183,14 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
                 if (keyPressed->code == Keyboard::Key::Escape) {
-                    for (Personaje* p : personajes) delete p;
+                    borrarPersonajes(personajes);
                     return nullptr;
                 }
             }
 
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
                 if (mouseButton->button == Mouse::Button::Right) {
-                    for (Personaje* p : personajes) delete p;
+                    borrarPersonajes(personajes);
                     return nullptr;
                 }
                 if (mouseButton->button == Mouse::Button::Left) {
@@ -214,6 +232,6 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         window.display();
     }
 
-    for (Personaje* p : personajes) delete p;
+    borrarPersonajes(personajes);
     return nullptr;
 }
