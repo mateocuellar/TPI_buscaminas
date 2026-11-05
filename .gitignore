@@ -1,0 +1,9 @@
+bin/
+obj/
+*.dll
+*.exe
+SFML/doc/
+SFML/examples/
+SFML/
+
+

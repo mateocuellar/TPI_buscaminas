@@ -1,4 +1,5 @@
 #include "MenuPrincipal.h"
+#include <ranking.h>
 
 using namespace std;
 using namespace sf;
@@ -212,8 +213,13 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     if (btnLogin->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Login..." << endl;
                         registroUsuario ui;
-                        ui.mostrarLogin(window);
+                          if (ui.mostrarLogin(window)) {
+                            cout << "Login exitoso. Iniciando partida desde Login..." << endl;
+                            Partida partidaActual;
+                            partidaActual.ejecutar(window);
+                        }
                     }
+
 
                     if (btnRegister->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Registro..." << endl;
@@ -228,7 +234,9 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     }
 
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
-                        cout << "Clic en: Ranking" << endl;
+                        cout << "Abriendo pantalla de Ranking..." << endl;
+                        ranking pantallaRanking;
+                        pantallaRanking.mostrar(window);
                     }
 
                     if (btnSalir->getGlobalBounds().contains(mousePos)) {

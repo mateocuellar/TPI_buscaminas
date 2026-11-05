@@ -1,4 +1,6 @@
 #include "registroUsuario.h"
+#include <cstring>
+#include <iostream>
 
 using namespace std;
 using namespace sf;
@@ -44,7 +46,6 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     textoContenidoPassword->setPosition(Vector2f(cajaTextoPassword->getPosition().x + 10.f, 460.f));
     textoContenidoPassword->setFillColor(Color::White);
 
-
     btnAceptar.emplace(Vector2f(180.f, 45.f));
     btnAceptar->setPosition(Vector2f(centroX - 200.f, 580.f));
     btnAceptar->setFillColor(Color(255, 107, 53));
@@ -66,12 +67,17 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     ));
 }
 
-void registroUsuario::mostrarLogin(RenderWindow& window) {
-    if (!cargarRecursos()) return;
+bool registroUsuario::mostrarLogin(RenderWindow& window) {
+    if (!cargarRecursos()) return false;
     inicializarComponentes(window, "INICIAR SESION");
 
     stringUsuario = "";
     stringPassword = "";
+
+
+    Text textoAlerta(font, "", 18);
+    textoAlerta.setFillColor(Color::Red);
+    textoAlerta.setPosition(Vector2f(window.getSize().x / 2.f - 100.f, 530.f));
 
     while (window.isOpen()) {
         cajaTextoUsuario->setOutlineColor(campoSeleccionado ? Color(255, 107, 53) : Color::Transparent);
@@ -82,20 +88,23 @@ void registroUsuario::mostrarLogin(RenderWindow& window) {
                 window.close();
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
-                if (keyPressed->code == Keyboard::Key::Escape) return;
+                if (keyPressed->code == Keyboard::Key::Escape) return false;
                 if (keyPressed->code == Keyboard::Key::Tab) campoSeleccionado = !campoSeleccionado;
 
+                if (keyPressed->code == Keyboard::Key::Enter){
+                    if (campoSeleccionado){
+                        campoSeleccionado = false;
+                    }
+                    else {
 
-            if (keyPressed->code == Keyboard::Key::Enter){
-                if (campoSeleccionado){
-                    campoSeleccionado = false;
+                        if (verificarCredenciales(stringUsuario, stringPassword)) {
+                            cout << "Login exitoso!" << endl;
+                            return true;
+                        } else {
+                            textoAlerta.setString("Usuario o clave incorrectos.");
+                        }
+                    }
                 }
-                else{
-                    cout << "Intenando Login desde Enter -> Usuario:" << stringUsuario << endl;
-                    return;
-                }
-
-            }
             }
 
             if (const auto* textEvent = event->getIf<Event::TextEntered>()) {
@@ -115,15 +124,20 @@ void registroUsuario::mostrarLogin(RenderWindow& window) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
                     if (cajaTextoUsuario->getGlobalBounds().contains(mousePos)) campoSeleccionado = true;
                     if (cajaTextoPassword->getGlobalBounds().contains(mousePos)) campoSeleccionado = false;
-                    if (btnVolver->getGlobalBounds().contains(mousePos)) return;
+                    if (btnVolver->getGlobalBounds().contains(mousePos)) return false;
+
                     if (btnAceptar->getGlobalBounds().contains(mousePos)) {
-                        cout << "Intentando Login -> Usuario: " << stringUsuario << " | Clave: " << stringPassword << endl;
-                        return;
+
+                        if (verificarCredenciales(stringUsuario, stringPassword)) {
+                            cout << "Login exitoso!" << endl;
+                            return true;
+                        } else {
+                            textoAlerta.setString("Usuario o clave incorrectos.");
+                        }
                     }
                 }
             }
         }
-
 
         textoContenidoUsuario->setString(stringUsuario);
         string oculto(stringPassword.size(), '*');
@@ -134,10 +148,8 @@ void registroUsuario::mostrarLogin(RenderWindow& window) {
         window.draw(*cajaTextoUsuario);
         window.draw(*cajaTextoPassword);
 
-
         window.draw(*textoUsuario);
         window.draw(*textoPassword);
-
 
         window.draw(*textoContenidoUsuario);
         window.draw(*textoContenidoPassword);
@@ -146,10 +158,10 @@ void registroUsuario::mostrarLogin(RenderWindow& window) {
         window.draw(*btnVolver);
         window.draw(*etiquetaAceptar);
         window.draw(*etiquetaVolver);
+        window.draw(textoAlerta);
         window.display();
     }
 }
-
 
 void registroUsuario::mostrarRegistro(RenderWindow& window) {
     if (!cargarRecursos()) return;
@@ -158,6 +170,10 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
     stringUsuario = "";
     stringPassword = "";
 
+    Text textoAlerta(font, "", 18);
+    textoAlerta.setFillColor(Color::Red);
+    textoAlerta.setPosition(Vector2f(window.getSize().x / 2.f - 120.f, 530.f));
+
     while (window.isOpen()) {
         cajaTextoUsuario->setOutlineColor(campoSeleccionado ? Color(255, 107, 53) : Color::Transparent);
         cajaTextoPassword->setOutlineColor(!campoSeleccionado ? Color(255, 107, 53) : Color::Transparent);
@@ -170,16 +186,20 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
                 if (keyPressed->code == Keyboard::Key::Escape) return;
                 if (keyPressed->code == Keyboard::Key::Tab) campoSeleccionado = !campoSeleccionado;
 
+                if (keyPressed->code == Keyboard::Key::Enter){
+                    if (campoSeleccionado){
+                        campoSeleccionado = false;
+                    }
+                    else {
 
-            if (keyPressed->code == Keyboard::Key::Enter){
-                if (campoSeleccionado){
-                    campoSeleccionado = false;
+                        if (guardarUsuarioNuevo(stringUsuario, stringPassword)) {
+                            cout << "Usuario registrado con exito!" << endl;
+                            return;
+                        } else {
+                            textoAlerta.setString("Error: El usuario ya existe o campos vacios.");
+                        }
+                    }
                 }
-                else{
-                    cout << "Registrando desde Enter -> Usuario: " << stringUsuario << endl;
-                    return;
-                }
-            }
             }
 
             if (const auto* textEvent = event->getIf<Event::TextEntered>()) {
@@ -199,37 +219,79 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
                     if (cajaTextoUsuario->getGlobalBounds().contains(mousePos)) campoSeleccionado = true;
                     if (cajaTextoPassword->getGlobalBounds().contains(mousePos)) campoSeleccionado = false;
+
                     if (btnVolver->getGlobalBounds().contains(mousePos)) return;
                     if (btnAceptar->getGlobalBounds().contains(mousePos)) {
-                        cout << "Registrando -> Usuario: " << stringUsuario << " | Clave: " << stringPassword << endl;
+
+                    if (guardarUsuarioNuevo(stringUsuario, stringPassword)) {
+                        cout << "Usuario registrado con exito!" << endl;
                         return;
+                    } else {
+                        textoAlerta.setString("Error: El usuario ya existe o campos vacios.");
                     }
+                    }
+                    }
+                    }
+                    }
+
+    textoContenidoUsuario->setString(stringUsuario);
+    string oculto(stringPassword.size(), '*');
+    textoContenidoPassword->setString(oculto);
+    window.clear(Color(24, 33, 43));
+    window.draw(*textoTitulo);
+    window.draw(*cajaTextoUsuario);
+    window.draw(*cajaTextoPassword);
+    window.draw(*textoUsuario);
+    window.draw(*textoPassword);
+    window.draw(*textoContenidoUsuario);
+    window.draw(*textoContenidoPassword);
+    window.draw(*btnAceptar);
+    window.draw(*btnVolver);
+    window.draw(*etiquetaAceptar);
+    window.draw(*etiquetaVolver);
+    window.draw(textoAlerta);
+    window.display();
+    }
+    }
+    bool registroUsuario::guardarUsuarioNuevo(const std::string& user, const std::string& pass) {
+        if (user.empty() || pass.empty() || user.size() >= 20 || pass.size() >= 20) return false;
+
+            std::ifstream archivoLectura("Usuarios.dat", std::ios::binary);
+        if (archivoLectura.is_open()) {
+            RegistroUsuarioBinario registroLector;
+        while (archivoLectura.read(reinterpret_cast<char*>(&registroLector), sizeof(RegistroUsuarioBinario))) {
+            if (std::string(registroLector.nombre) == user) {
+                archivoLectura.close();
+                return false;
                 }
             }
+            archivoLectura.close();
         }
 
+    RegistroUsuarioBinario nuevoUsuario;
+    std::memset(&nuevoUsuario, 0, sizeof(RegistroUsuarioBinario));
+    std::strncpy(nuevoUsuario.nombre, user.c_str(), 19);
+    std::strncpy(nuevoUsuario.password, pass.c_str(), 19);
 
-        textoContenidoUsuario->setString(stringUsuario);
-        string oculto(stringPassword.size(), '*');
-        textoContenidoPassword->setString(oculto);
-
-        window.clear(Color(24, 33, 43));
-        window.draw(*textoTitulo);
-        window.draw(*cajaTextoUsuario);
-        window.draw(*cajaTextoPassword);
-
-        window.draw(*textoUsuario);
-        window.draw(*textoPassword);
-
-        window.draw(*textoContenidoUsuario);
-        window.draw(*textoContenidoPassword);
-
-        window.draw(*btnAceptar);
-        window.draw(*btnVolver);
-        window.draw(*etiquetaAceptar);
-        window.draw(*etiquetaVolver);
-        window.display();
+    std::ofstream archivoEscritura("Usuarios.dat", std::ios::binary | std::ios::app);
+        if (archivoEscritura.is_open()) {
+            archivoEscritura.write(reinterpret_cast<const char*>(&nuevoUsuario), sizeof(RegistroUsuarioBinario));
+            archivoEscritura.close();
+            return true;
+        }
+    return false;
     }
-}
-
+    bool registroUsuario::verificarCredenciales(const std::string& user, const std::string& pass) {
+    std::ifstream archivo("Usuarios.dat", std::ios::binary);
+        if (!archivo.is_open()) return false;
+            RegistroUsuarioBinario registroLector;
+            while (archivo.read(reinterpret_cast<char*>(&registroLector), sizeof(RegistroUsuarioBinario))) {
+        if (std::string(registroLector.nombre) == user && std::string(registroLector.password) == pass) {
+            archivo.close();
+            return true;
+        }
+        }
+    archivo.close();
+    return false;
+    }
 

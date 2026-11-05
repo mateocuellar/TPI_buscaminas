@@ -5,6 +5,14 @@
 #include <iostream>
 #include <string>
 #include <optional>
+#include <vector>
+#include <fstream>
+
+
+struct RegistroUsuarioBinario {
+    char nombre[20];
+    char password[20];
+};
 
 class registroUsuario {
 private:
@@ -25,17 +33,20 @@ private:
 
     std::string stringUsuario;
     std::string stringPassword;
-
     bool campoSeleccionado;
 
     bool cargarRecursos();
     void inicializarComponentes(sf::RenderWindow& window, const std::string& tituloPantalla);
 
+
+    bool guardarUsuarioNuevo(const std::string& user, const std::string& pass);
+    bool verificarCredenciales(const std::string& user, const std::string& pass);
+
 public:
     registroUsuario();
 
 
-    void mostrarLogin(sf::RenderWindow& window);
+    bool mostrarLogin(sf::RenderWindow& window);
     void mostrarRegistro(sf::RenderWindow& window);
 };
 
