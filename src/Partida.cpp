@@ -82,19 +82,31 @@ void Partida::destapar(int idx) {
 }
 
 bool Partida::inicializarTablero(RenderWindow& window) {
+
+    window.setView(window.getDefaultView());
     Vector2u tamVentana = window.getSize();
+
+    fondo.emplace(texturaFondo);
+    Vector2u tamFondo = texturaFondo.getSize();
+
+
+    float escalaFondoX = static_cast<float>(tamVentana.x) / tamFondo.x;
+    float escalaFondoY = static_cast<float>(tamVentana.y) / tamFondo.y;
+
+    fondo->setScale(Vector2f(escalaFondoX, escalaFondoY));
+    fondo->setPosition(Vector2f(0.f, 0.f));
+
+
+    float altoDisponible = 810.f;
+    float anchoDisponible = tamVentana.x * 0.95f;
+
+    float tamMaxX = anchoDisponible / cantCuadradosX;
+    float tamMaxY = altoDisponible / cantCuadradosY;
+    tamCuadrado = min(tamMaxX, tamMaxY);
 
     spritePersonaje.emplace(personaje->getTexturaIdle());
     Vector2u tamPj = personaje->getTexturaIdle().getSize();
     spritePersonaje->setScale({tamCuadrado / tamPj.x, tamCuadrado / tamPj.y});
-    fondo.emplace(texturaFondo);
-
-    Vector2u tamFondo = texturaFondo.getSize();
-
-    fondo->setScale(Vector2f(
-        static_cast<float>(tamVentana.x) / tamFondo.x,
-        static_cast<float>(tamVentana.y) / tamFondo.y
-    ));
 
     textoTimer.emplace(font, "TIEMPO: 0:00", 30);
     textoTimer->setPosition(Vector2f(150, tamVentana.y - 100));
@@ -103,7 +115,7 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoCantidadBombas.emplace(font, "", 30);
     textoCantidadBombas->setPosition(Vector2f(150, tamVentana.y - 60));
 
-    ///para gamerover
+
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
 
@@ -119,18 +131,19 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
 
-    float anchoTablero = cantCuadradosX * tamCuadrado + (cantCuadradosX - 1);
-    float altoTablero = cantCuadradosY * tamCuadrado + (cantCuadradosY - 1);
+    float anchoTablero = cantCuadradosX * tamCuadrado;
+    float altoTablero = cantCuadradosY * tamCuadrado;
     float inicioX = (tamVentana.x - anchoTablero) / 2.f;
-    float altoDisponible = 830.f;
     float inicioY = (altoDisponible - altoTablero) / 2.f;
 
+
+    botones.clear();
     for (int i = 0; i < cantCuadradosX; i++) {
         for (int j = 0; j < cantCuadradosY; j++) {
             Sprite boton(texturaBloque);
             Vector2u tam = texturaBloque.getSize();
             boton.setScale({tamCuadrado / tam.x, tamCuadrado / tam.y});
-            boton.setPosition({inicioX + i * tamCuadrado, inicioY + j * tamCuadrado});
+            boton.setPosition({inicioX + (i * tamCuadrado), inicioY + (j * tamCuadrado)});
             botones.push_back(boton);
         }
     }
@@ -148,18 +161,19 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     indicesBombas.assign(indices.begin(), indices.begin() + cantBombas);
 
     Vector2u tamBomba = texturaBomba.getSize();
-    float escalaX = tamCuadrado / tamBomba.x;
-    float escalaY = tamCuadrado / tamBomba.y;
+    float escalaBombaX = tamCuadrado / tamBomba.x;
+    float escalaBombaY = tamCuadrado / tamBomba.y;
 
+    bombas.clear();
     for (int idx : indicesBombas) {
         Sprite b(texturaBomba);
-        b.setScale({escalaX, escalaY});
+        b.setScale({escalaBombaX, escalaBombaY});
         b.setPosition(botones[idx].getPosition());
         bombas.push_back(b);
     }
 
     bandera.emplace(texturaBandera);
-    bandera->setScale({escalaX, escalaY});
+    bandera->setScale({escalaBombaX, escalaBombaY});
 
     hud.emplace(texturaHud);
     Vector2u tamHud = texturaHud.getSize();
@@ -167,19 +181,19 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     hud->setPosition({0, 830.f});
 
     bombaHud.emplace(texturaBomba);
-    bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
+    bombaHud->setScale({escalaBombaX * 0.7f, escalaBombaY * 0.7f});
     bombaHud->setPosition(Vector2f(550, tamVentana.y - 70));
 
     vidaHud.emplace(texturaVida);
     Vector2u tamVidaHud = texturaVida.getSize();
     vidaHud->setPosition(Vector2f(270, tamVentana.y - 170));
-    vidaHud->setScale({escalaX * 0.3f, escalaY * 0.3f});
+    vidaHud->setScale({escalaBombaX * 0.3f, escalaBombaY * 0.3f});
 
     textoVidaActual.emplace(font, to_string(personaje->getVida()), 30);
     textoVidaActual->setPosition(Vector2f(270 + 60, tamVentana.y - 170));
 
     armaduraHud.emplace(texturaArmadura);
-    armaduraHud->setScale({escalaX * 0.3f, escalaY * 0.3f});
+    armaduraHud->setScale({escalaBombaX * 0.3f, escalaBombaY * 0.3f});
     armaduraHud->setPosition(Vector2f(400, tamVentana.y - 170));
 
     textoArmaduraActual.emplace(font, to_string(personaje->getArmadura()),30);
@@ -208,8 +222,15 @@ bool Partida::inicializarTablero(RenderWindow& window) {
 void Partida::ejecutar(RenderWindow& window) {
     if (!cargarRecursos()) return;
 
+
+    window.setView(window.getDefaultView());
+
+
     personaje = seleccionPersonaje(window);
     if (personaje == nullptr) return;
+
+
+    window.setView(window.getDefaultView());
 
     if (!inicializarTablero(window)) return;
 
@@ -276,6 +297,7 @@ void Partida::ejecutar(RenderWindow& window) {
             textoTimer->setString("TIEMPO: 0:" + to_string((int)segundos));
         }
 
+        window.setView(window.getDefaultView());
         window.clear(Color(24, 33, 43));
 
         window.draw(*fondo);

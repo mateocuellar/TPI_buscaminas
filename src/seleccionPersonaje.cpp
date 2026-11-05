@@ -47,12 +47,10 @@ CasperNull::CasperNull() : Personaje(
     {"Casper Null",
      "SEEK AND DESTROY",
      "DESARMADOR",
-     "Filtra la informacion falsa de las Minas\n"
-     "de Radiacion y muestra el numero real. \n"
-     "Tiene un intento de bandera erronea por \n"
-     "nivel sin penalizacion. \n\n"
-     "Es fragil: 1 vida menos y una Mina de Fuego \n"
-     "lo elimina al instante.\n"},
+     "\n"
+     "-> Filtra la informacion falsa de las Minas de Radiacion y muestra el numero real\n"
+     "-> Tiene un intento de bandera erronea por nivel sin penalizacion\n"
+     "-> Es fragil: 1 vida menos y una Mina de Fuego lo elimina al instante\n"},
     3, 1,
     "imagenes/personaje-casper-null.png",
     "img/texturaPersonajes/casper_null_64.png",
@@ -65,12 +63,9 @@ DunbarYunque::DunbarYunque() : Personaje(
     {"Dunbar Yunque",
     "MITIGAR",
     "ESCUDO TÉRMICO",
-    "El escudo absorbe por completo el impacto \n"
-    "de minas comunes y de fuego, \n"
-    "y es inmune al hielo. \n"
-    "Pero el tiempo limite se reduce 25% \n"
-    "y cada bandera mal puesta le baja el \n"
-    "puntaje del ranking."},
+    "\n"
+    "-> El escudo absorbe por completo el impacto de minas comunes y fuego, es inmune al hielo\n"
+    "-> El tiempo limite se reduce 25% y cada bandera mal puesta le baja el puntaje del ranking\n"},
     3, 4,
     "imagenes/personaje-dunbar-yunque.png",
     "img/texturaPersonajes/dunbar_yunque_64.png",
@@ -82,12 +77,10 @@ TessKnot::TessKnot() : Personaje(
     {"Tess Knot",
      "DESTREZA ANALÍTICA",
      "ESCANEO",
-     "Su escaneo avisa si una ruta puede causar \n"
-     "reaccion en cadena. \n"
-     "No tiene defensas: una mina comun \n"
-     "le resta 2 vidas, \n"
-     "no es inmune a ningun estado, \n"
-     "y el escaneo tiene 5 turnos de recarga."},
+     "\n"
+     "-> Su escaneo avisa si una ruta puede causar reaccion en cadena\n"
+     "-> No tiene defensas: una mina comun le resta 2 vidas, no es inmune a ningun estado y el\n"
+     "escaneo tiene 5 turnos de recarga"},
     4, 3,
     "imagenes/personaje-tess-knot.png",
     "img/texturaPersonajes/tess_knot_64.png",
@@ -103,6 +96,7 @@ void borrarPersonajes(vector<Personaje*>& personajes) {
 }
 
 Personaje* seleccionPersonaje(RenderWindow& window) {
+    window.setView(window.getDefaultView());
     Vector2u tamVentana = window.getSize();
 
     Texture texturaFondo;
@@ -141,12 +135,13 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
 
-    float anchoBoton = 850.f, altoBoton = 300.f;
-    float anchoImg = altoBoton - 30, altoImg = altoBoton - 30;
+    float anchoBoton = 850.f, altoBoton = 180.f;
+    float anchoImg = altoBoton - 15.f, altoImg = altoBoton - 15.f;
     float inicioY = tamVentana.y / 2 - altoBoton / 2;
-    float espaciado = 350.f;
-    float margen = 30.f;
-    float primeraY = inicioY - espaciado;
+     float espaciado = 200.f;
+    float altoTotalBloque = espaciado * 3.f - (espaciado - altoBoton);
+    float primeraY = (tamVentana.y - altoTotalBloque) / 2.f;
+    float margen = 20.f;
 
     vector<RectangleShape> botones;
     vector<Text> nombres, descripciones;
@@ -161,19 +156,21 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         boton.setFillColor(colorNormal);
         botones.push_back(boton);
 
-        Text nombre(font, personajes[i]->getTexto(NOMBRE), 30);
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 35);
         nombre.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen / 2));
         nombres.push_back(nombre);
 
-        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 24);
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 18);
         desc.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen * 2));
         descripciones.push_back(desc);
 
         Sprite sprite(personajes[i]->getTextura());
         Vector2u tam = personajes[i]->getTextura().getSize();
         sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
-        sprite.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, y + margen / 2));
+        float desfaseCentradoY = (altoBoton - altoImg) / 2.f;
+        sprite.setPosition(Vector2f(xBoton + 10.f, y + desfaseCentradoY));
         sprites.push_back(sprite);
+
     }
 
     while (window.isOpen()) {

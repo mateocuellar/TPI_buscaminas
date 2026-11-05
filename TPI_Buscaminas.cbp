@@ -40,7 +40,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="D:/SSD/Users/rodri/Escritorio/Programacion II NEW/TPI_buscaminas/SFML/include" />
 		</Compiler>
+		<Linker>
+			<Add directory="D:/SSD/Users/rodri/Escritorio/Programacion II NEW/TPI_buscaminas/SFML/lib" />
+		</Linker>
 		<Unit filename="include/Partida.h" />
 		<Unit filename="include/menuPrincipal.h" />
 		<Unit filename="include/ranking.h" />
