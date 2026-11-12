@@ -7,6 +7,8 @@
 #include "Partida.h"
 #include "registroUsuario.h"
 
+void dibujarConSombra(RenderWindow& window, Text& texto, float desplazamiento);
+
 struct Particula {
     sf::Sprite sprite;
     sf::Vector2f velocidad;
@@ -28,10 +30,10 @@ private:
     std::optional<sf::RectangleShape> btnRanking;
     std::optional<sf::RectangleShape> btnSalir;
 
-    std::optional<sf::Text> sombraTitulo;
-    std::optional<sf::Text> sombraTitulo2;
     std::optional<sf::Text> titulo;
+    std::optional<sf::Text> sombraTitulo;
     std::optional<sf::Text> titulo2;
+    std::optional<sf::Text> sombraTitulo2;
     std::optional<sf::Text> textoLogin;
     std::optional<sf::Text> textoRegister;
     std::optional<sf::Text> textoNuevaPartida;
@@ -40,10 +42,13 @@ private:
 
     sf::Texture texturaFondo;
     std::optional<sf::Sprite> fondo;
+    std::optional<sf::Sprite> brillo;
 
     sf::Texture texturaHoja;
     sf::Texture texturaPolvo;
+    sf::Texture texturaBrillo;
     std::vector<Particula> particulas;
+
     sf::Clock relojParticulas;
 
     void crearParticulas(sf::RenderWindow& window);

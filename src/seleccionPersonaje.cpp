@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string rutaImagen, string rutaImagenTexturaIdle,const vector<Color>& colores) {
+Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio,const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
@@ -15,8 +15,10 @@ Personaje::Personaje(const vector<string>& datos, int vida, int armadura, string
     }
     this->vida = vida;
     this->armadura = armadura;
+    this->maxUsoHabilidad = maxUsoHabilidad;
     this->rutaImagen = rutaImagen;
     this->rutaImagenTexturaIdle = rutaImagenTexturaIdle;
+    this->rutaImgTexturaDanio = rutaImgTexturaDanio;
 }
 
 Personaje::~Personaje() {
@@ -30,64 +32,115 @@ int Personaje::getVida() const{
 int Personaje::getArmadura() const{
     return armadura;
 }
+void Personaje::setArmadura(int arm){
+    armadura = arm;
+}
+void Personaje::setTextura(Texture nuevaTextura){
+    texturaIdle = nuevaTextura;
+}
 
-
+void Personaje::setVida(int v){
+    vida = v;
+}
+bool Personaje::usarHabilidad(){
+    if(contadorHabilidad >= maxUsoHabilidad){
+        return false;
+    }
+    contadorHabilidad ++;
+    return true;
+}
 Color Personaje::getColor(ColoresPersonaje color) const {
     return vecColores[color];
 }
-
 const Texture& Personaje::getTextura() const {
     return textura;
 }
 const Texture& Personaje::getTexturaIdle() const {
     return texturaIdle;
 }
+const Texture& Personaje::getTexturaDanio() const {
+    return texturaDanio;
+}
+
+void Personaje::recibirDanio(){
+    if(Personaje::getArmadura()>0){
+        Personaje::setArmadura(Personaje::getArmadura() - 1);
+    } else {
+        Personaje::setVida(Personaje::getVida() - 1);
+    }
+}
 
 CasperNull::CasperNull() : Personaje(
     {"Casper Null",
      "SEEK AND DESTROY",
      "DESARMADOR",
-     "\n"
-     "-> Filtra la informacion falsa de las Minas de Radiacion y muestra el numero real\n"
-     "-> Tiene un intento de bandera erronea por nivel sin penalizacion\n"
-     "-> Es fragil: 1 vida menos y una Mina de Fuego lo elimina al instante\n"},
-    3, 1,
+     "Filtra la informacion falsa de las Minas\n"
+     "de Radiacion y muestra el numero real. \n"
+     "Tiene un intento de bandera erronea por \n"
+     "nivel sin penalizacion. \n\n"
+     "Es fragil: 1 vida menos y una Mina de Fuego \n"
+     "lo elimina al instante.\n"},
+    1, 1, 2,
     "imagenes/personaje-casper-null.png",
-    "img/texturaPersonajes/casper_null_64.png",
+    "img/texturaPersonajes/casper_null_idle_1.png",
+    "img/texturaPersonajes/casper_null_danio.png",
     {Color(225, 85, 40), Color(220, 175, 60)}) {
+}
+
+void CasperNull::habilidad() {
+    if (!usarHabilidad()) return;
+    cout << "CASPER NULL: Filtrando informacion falsa..." << endl;
 }
 
 CasperNull::~CasperNull() {
 }
+
 DunbarYunque::DunbarYunque() : Personaje(
     {"Dunbar Yunque",
     "MITIGAR",
     "ESCUDO TÉRMICO",
-    "\n"
-    "-> El escudo absorbe por completo el impacto de minas comunes y fuego, es inmune al hielo\n"
-    "-> El tiempo limite se reduce 25% y cada bandera mal puesta le baja el puntaje del ranking\n"},
-    3, 4,
+    "El escudo absorbe por completo el impacto \n"
+    "de minas comunes y de fuego, \n"
+    "y es inmune al hielo. \n"
+    "Pero el tiempo limite se reduce 25% \n"
+    "y cada bandera mal puesta le baja el \n"
+    "puntaje del ranking."},
+    2, 2, 1,
     "imagenes/personaje-dunbar-yunque.png",
-    "img/texturaPersonajes/dunbar_yunque_64.png",
+    "img/texturaPersonajes/dunbar_yunque_idle_1.png",
+    "img/texturaPersonajes/dunbar_yunque_idle_1.png",
     {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
-DunbarYunque::~DunbarYunque() {
+
+void DunbarYunque::habilidad() {
+    if (!usarHabilidad()) return;
+    setArmadura(getArmadura() + 1);
 }
+
+DunbarYunque::~DunbarYunque() {}
+
 TessKnot::TessKnot() : Personaje(
     {"Tess Knot",
      "DESTREZA ANALÍTICA",
      "ESCANEO",
-     "\n"
-     "-> Su escaneo avisa si una ruta puede causar reaccion en cadena\n"
-     "-> No tiene defensas: una mina comun le resta 2 vidas, no es inmune a ningun estado y el\n"
-     "escaneo tiene 5 turnos de recarga"},
-    4, 3,
+     "Su escaneo avisa si una ruta puede causar \n"
+     "reaccion en cadena. \n"
+     "No tiene defensas: una mina comun \n"
+     "le resta 2 vidas, \n"
+     "no es inmune a ningun estado, \n"
+     "y el escaneo tiene 5 turnos de recarga."},
+    2, 0, 3,
     "imagenes/personaje-tess-knot.png",
-    "img/texturaPersonajes/tess_knot_64.png",
+    "img/texturaPersonajes/tess_knot_idle_1.png",
+    "img/texturaPersonajes/tess_knot_idle_1.png",
     {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
-TessKnot::~TessKnot() {
+
+void TessKnot::habilidad() {
+    if (!usarHabilidad()) return;
 }
+
+TessKnot::~TessKnot() {}
 
 void borrarPersonajes(vector<Personaje*>& personajes) {
     for (size_t i = 0; i < personajes.size(); i++) {
@@ -96,7 +149,6 @@ void borrarPersonajes(vector<Personaje*>& personajes) {
 }
 
 Personaje* seleccionPersonaje(RenderWindow& window) {
-    window.setView(window.getDefaultView());
     Vector2u tamVentana = window.getSize();
 
     Texture texturaFondo;
@@ -135,13 +187,12 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
 
-    float anchoBoton = 850.f, altoBoton = 180.f;
-    float anchoImg = altoBoton - 15.f, altoImg = altoBoton - 15.f;
+    float anchoBoton = 850.f, altoBoton = 300.f;
+    float anchoImg = altoBoton - 30, altoImg = altoBoton - 30;
     float inicioY = tamVentana.y / 2 - altoBoton / 2;
-     float espaciado = 200.f;
-    float altoTotalBloque = espaciado * 3.f - (espaciado - altoBoton);
-    float primeraY = (tamVentana.y - altoTotalBloque) / 2.f;
-    float margen = 20.f;
+    float espaciado = 350.f;
+    float margen = 30.f;
+    float primeraY = inicioY - espaciado;
 
     vector<RectangleShape> botones;
     vector<Text> nombres, descripciones;
@@ -156,21 +207,19 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         boton.setFillColor(colorNormal);
         botones.push_back(boton);
 
-        Text nombre(font, personajes[i]->getTexto(NOMBRE), 35);
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 30);
         nombre.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen / 2));
         nombres.push_back(nombre);
 
-        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 18);
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 24);
         desc.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen * 2));
         descripciones.push_back(desc);
 
         Sprite sprite(personajes[i]->getTextura());
         Vector2u tam = personajes[i]->getTextura().getSize();
         sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
-        float desfaseCentradoY = (altoBoton - altoImg) / 2.f;
-        sprite.setPosition(Vector2f(xBoton + 10.f, y + desfaseCentradoY));
+        sprite.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, y + margen / 2));
         sprites.push_back(sprite);
-
     }
 
     while (window.isOpen()) {

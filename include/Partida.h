@@ -17,6 +17,8 @@ using namespace sf;
 class Partida {
 private:
     mt19937 gen;
+    Clock relojDanio;
+    bool mostrandoDanio = false;
 
     Font font;
     Texture texturaBomba;
@@ -33,6 +35,7 @@ private:
     optional<Text> textoPasiva;
     optional<Text> textoStatus;
     optional<Text> textoCommands;
+    vector <Text> vecTextoCommands;
 
     optional<Sprite> fondo;
     optional<Sprite> hud;

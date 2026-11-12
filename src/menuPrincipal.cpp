@@ -4,6 +4,18 @@
 using namespace std;
 using namespace sf;
 
+void dibujarConSombra(RenderWindow& window, Text& texto, float desplazamiento) {
+    Vector2f posOriginal = texto.getPosition();
+    Color colorOriginal = texto.getFillColor();
+    texto.setFillColor(Color(0,0,0,200));
+    texto.setPosition(Vector2f(posOriginal.x+desplazamiento,posOriginal.y+desplazamiento));
+    window.draw(texto);
+
+    texto.setFillColor(colorOriginal);
+    texto.setPosition(Vector2f(posOriginal.x,posOriginal.y));
+    window.draw(texto);
+}
+
 menuPrincipal::menuPrincipal() {
 
 }
@@ -12,6 +24,7 @@ bool menuPrincipal::cargarRecursos() {
     if (!texturaFondo.loadFromFile("img/fondo_menu.png")) return false;
     if (!texturaHoja.loadFromFile("img/particulas/hoja1.png")) return false;
     if (!texturaPolvo.loadFromFile("img/particulas/polvo_grande.png")) return false;
+    if (!texturaBrillo.loadFromFile("img/particulas/glow_sol.png")) return false;
     return font.openFromFile("fuente.TTF");
 }
 
@@ -62,6 +75,20 @@ void menuPrincipal::crearParticulas(RenderWindow& window) {
 
         particulas.push_back(p);
     }
+
+    brillo.emplace(texturaBrillo);
+
+    Vector2u tamBrillo = texturaBrillo.getSize();
+
+    brillo->setOrigin(Vector2f(
+        tamBrillo.x / 2.f,
+        tamBrillo.y / 2.f
+    ));
+
+    brillo->setPosition(Vector2f(tamVentana.x - 200, 385));
+    brillo->setScale(Vector2f(0.7f, 0.7f));
+
+
 }
 
 void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
@@ -85,6 +112,7 @@ void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
             particulas[i].sprite.setPosition(Vector2f(nuevaX(gen), -50.f));
         }
     }
+    brillo->rotate(degrees(10.f * dt));
 }
 
 void menuPrincipal::inicializarComponentes(RenderWindow& window) {
@@ -92,10 +120,10 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
 
     Color colorBtn(255, 107, 53);
 
-    float anchoBoton = 320.f;
-    float altoBoton = 60.f;
+    float anchoBoton = 360.f;
+    float altoBoton = 80.f;
     float inicioY = 400.f;
-    float espaciado = 80.f;
+    float espaciado = 100.f;
 
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
@@ -125,19 +153,11 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnSalir->setPosition(Vector2f(0, 0));
     btnSalir->setFillColor(Color(200,0,0, 100));
 
-    titulo.emplace(font, "MINESWEEPER:", 94);
-    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, 180.f));
+    titulo.emplace(font, "MINESWEEPER:", 110);
+    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, 150.f));
 
-    titulo2.emplace(font, "ELEMENTAL TACTICS", 64);
+    titulo2.emplace(font, "ELEMENTAL TACTICS", 72);
     titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, 270.f));
-
-    sombraTitulo.emplace(font, "MINESWEEPER:", 94);
-    sombraTitulo->setFillColor(Color(0, 0, 0, 200));
-    sombraTitulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f + 5, 180.f + 5));
-
-    sombraTitulo2.emplace(font, "ELEMENTAL TACTICS", 64);
-    sombraTitulo2->setFillColor(Color(0, 0, 0, 200));
-    sombraTitulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f + 5, 270.f + 5));
 
     textoLogin.emplace(font, "Iniciar Sesion", 28);
     FloatRect boundsLogin = textoLogin->getGlobalBounds();
@@ -213,13 +233,12 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     if (btnLogin->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Login..." << endl;
                         registroUsuario ui;
-                          if (ui.mostrarLogin(window)) {
+                        if (ui.mostrarLogin(window)) {
                             cout << "Login exitoso. Iniciando partida desde Login..." << endl;
                             Partida partidaActual;
                             partidaActual.ejecutar(window);
                         }
                     }
-
 
                     if (btnRegister->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Registro..." << endl;
@@ -266,6 +285,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         for (size_t i = 0; i < particulas.size(); i++) {
             window.draw(particulas[i].sprite);
         }
+        window.draw(*brillo, BlendAdd);
 
         window.draw(*btnLogin);
         window.draw(*btnRegister);
@@ -273,16 +293,13 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.draw(*btnRanking);
         window.draw(*btnSalir);
 
-        window.draw(*sombraTitulo);
-        window.draw(*sombraTitulo2);
+        dibujarConSombra(window, *titulo, 5.f);
+        dibujarConSombra(window, *titulo2, 5.f);
+        dibujarConSombra(window, *textoLogin, 3.f);
+        dibujarConSombra(window, *textoRegister, 3.f);
+        dibujarConSombra(window, *textoNuevaPartida, 3.f);
+        dibujarConSombra(window, *textoRanking, 3.f);
 
-        window.draw(*titulo);
-        window.draw(*titulo2);
-
-        window.draw(*textoLogin);
-        window.draw(*textoRegister);
-        window.draw(*textoNuevaPartida);
-        window.draw(*textoRanking);
         window.draw(*textoSalir);
 
         window.display();

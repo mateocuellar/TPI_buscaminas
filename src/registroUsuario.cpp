@@ -29,11 +29,19 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     cajaTextoPassword->setFillColor(Color(40, 50, 65));
     cajaTextoPassword->setOutlineThickness(2.f);
 
+    cajaTextoConfirmPassword.emplace(Vector2f(300.f, 40.f));
+    cajaTextoConfirmPassword->setPosition(Vector2f(centroX - 50.f, 545.f));
+    cajaTextoConfirmPassword->setFillColor(Color(40, 50, 65));
+    cajaTextoConfirmPassword->setOutlineThickness(2.f);
+
     textoUsuario.emplace(font, "Usuario: ", 24);
     textoUsuario->setPosition(Vector2f(centroX - 250.f, 350.f));
 
     textoPassword.emplace(font, "Contraseña: ", 24);
     textoPassword->setPosition(Vector2f(centroX - 250.f, 450.f));
+
+    textoConfirmPassword.emplace(font, "Confirmar contraseña: ", 24);
+    textoConfirmPassword->setPosition(Vector2f(centroX - 250.f, 550.f));
 
     textoTitulo.emplace(font, tituloPantalla, 44);
     textoTitulo->setPosition(Vector2f((tamVentana.x - textoTitulo->getGlobalBounds().size.x) / 2.f, 200.f));
@@ -46,8 +54,12 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     textoContenidoPassword->setPosition(Vector2f(cajaTextoPassword->getPosition().x + 10.f, 460.f));
     textoContenidoPassword->setFillColor(Color::White);
 
+    textoContenidoConfirmPassword.emplace(font, "", 20);
+    textoContenidoConfirmPassword->setPosition(Vector2f(cajaTextoPassword->getPosition().x + 10.f, 560.f));
+    textoContenidoConfirmPassword->setFillColor(Color::White);
+
     btnAceptar.emplace(Vector2f(180.f, 45.f));
-    btnAceptar->setPosition(Vector2f(centroX - 200.f, 580.f));
+    btnAceptar->setPosition(Vector2f(centroX - 200.f, 680.f));
     btnAceptar->setFillColor(Color(255, 107, 53));
 
     etiquetaAceptar.emplace(font, "Aceptar", 20);
@@ -57,7 +69,7 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     ));
 
     btnVolver.emplace(Vector2f(180.f, 45.f));
-    btnVolver->setPosition(Vector2f(centroX + 20.f, 580.f));
+    btnVolver->setPosition(Vector2f(centroX + 20.f, 680.f));
     btnVolver->setFillColor(Color(100, 110, 120));
 
     etiquetaVolver.emplace(font, "Volver", 20);
@@ -97,7 +109,7 @@ bool registroUsuario::mostrarLogin(RenderWindow& window) {
                     }
                     else {
 
-                        if (verificarCredenciales(stringUsuario, stringPassword)) {
+                        if (verificarCredenciales(stringUsuario, stringPassword, stringConfirmPassword)) {
                             cout << "Login exitoso!" << endl;
                             return true;
                         } else {
@@ -128,7 +140,7 @@ bool registroUsuario::mostrarLogin(RenderWindow& window) {
 
                     if (btnAceptar->getGlobalBounds().contains(mousePos)) {
 
-                        if (verificarCredenciales(stringUsuario, stringPassword)) {
+                        if (verificarCredenciales(stringUsuario, stringPassword, stringConfirmPassword)) {
                             cout << "Login exitoso!" << endl;
                             return true;
                         } else {
@@ -142,17 +154,21 @@ bool registroUsuario::mostrarLogin(RenderWindow& window) {
         textoContenidoUsuario->setString(stringUsuario);
         string oculto(stringPassword.size(), '*');
         textoContenidoPassword->setString(oculto);
+        textoContenidoConfirmPassword->setString(oculto);
 
         window.clear(Color(24, 33, 43));
         window.draw(*textoTitulo);
         window.draw(*cajaTextoUsuario);
         window.draw(*cajaTextoPassword);
+        window.draw(*cajaTextoConfirmPassword);
 
         window.draw(*textoUsuario);
         window.draw(*textoPassword);
+        window.draw(*textoConfirmPassword);
 
         window.draw(*textoContenidoUsuario);
         window.draw(*textoContenidoPassword);
+        window.draw(*textoContenidoConfirmPassword);
 
         window.draw(*btnAceptar);
         window.draw(*btnVolver);
@@ -191,7 +207,6 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
                         campoSeleccionado = false;
                     }
                     else {
-
                         if (guardarUsuarioNuevo(stringUsuario, stringPassword)) {
                             cout << "Usuario registrado con exito!" << endl;
                             return;
@@ -237,14 +252,18 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
     textoContenidoUsuario->setString(stringUsuario);
     string oculto(stringPassword.size(), '*');
     textoContenidoPassword->setString(oculto);
+    textoContenidoConfirmPassword->setString(oculto);
     window.clear(Color(24, 33, 43));
     window.draw(*textoTitulo);
     window.draw(*cajaTextoUsuario);
     window.draw(*cajaTextoPassword);
+    window.draw(*cajaTextoConfirmPassword);
     window.draw(*textoUsuario);
     window.draw(*textoPassword);
+    window.draw(*textoConfirmPassword);
     window.draw(*textoContenidoUsuario);
     window.draw(*textoContenidoPassword);
+    window.draw(*textoContenidoConfirmPassword);
     window.draw(*btnAceptar);
     window.draw(*btnVolver);
     window.draw(*etiquetaAceptar);
@@ -281,7 +300,8 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
         }
     return false;
     }
-    bool registroUsuario::verificarCredenciales(const std::string& user, const std::string& pass) {
+    bool registroUsuario::verificarCredenciales(const std::string& user, const std::string& pass, const string& confirmPass) {
+        if(pass != confirmPass) return false;
     std::ifstream archivo("Usuarios.dat", std::ios::binary);
         if (!archivo.is_open()) return false;
             RegistroUsuarioBinario registroLector;
