@@ -17,10 +17,13 @@ using namespace sf;
 class Partida {
 private:
     mt19937 gen;
+    Clock relojAnim;
     Clock relojDanio;
     bool mostrandoDanio = false;
+    bool mostrandoHabilidad = false;
 
     Font font;
+    Font fontNum;
     Texture texturaBomba;
     Texture texturaBandera;
     Texture texturaHud;
@@ -71,10 +74,16 @@ private:
     optional<Text> textoGameOver;
     optional<Text> textoPuntuacion;
 
+    vector<int> numeros;
+    optional<Text> textoNumero;
+
+    bool esBomba(int idx);
+    void calcularNumeros();
 
     Clock reloj;
     int cantBombas;
 
+    void destaparRecursivo(int col, int fila);
     bool cargarRecursos();
     bool inicializarTablero(RenderWindow& window);
     void destapar(int idx);

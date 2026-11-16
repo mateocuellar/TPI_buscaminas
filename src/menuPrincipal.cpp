@@ -194,6 +194,10 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         (boundsSalir.size.x) / 2.f,
         btnSalir->getPosition().y + (altoBoton*0.8 - boundsSalir.size.y) / 2.f - boundsSalir.position.y
     ));
+
+    textoTpi.emplace(font, "Trabajo Práctico Integrador - Programación II- Universidad Tecnológica Nacional", 28);
+    FloatRect boundsTpi= textoTpi->getGlobalBounds();
+    textoTpi->setPosition(Vector2f(tamVentana.x/2 - boundsTpi.size.x/2 , tamVentana.y-100));
 }
 
 void menuPrincipal::ejecutar(RenderWindow& window) {
@@ -299,6 +303,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         dibujarConSombra(window, *textoRegister, 3.f);
         dibujarConSombra(window, *textoNuevaPartida, 3.f);
         dibujarConSombra(window, *textoRanking, 3.f);
+        dibujarConSombra(window, *textoTpi, 3.f);
 
         window.draw(*textoSalir);
 

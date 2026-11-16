@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio,const vector<Color>& colores) {
+Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio, string rutaImgTexturaHabilidad, const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
@@ -19,6 +19,8 @@ Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int ma
     this->rutaImagen = rutaImagen;
     this->rutaImagenTexturaIdle = rutaImagenTexturaIdle;
     this->rutaImgTexturaDanio = rutaImgTexturaDanio;
+    this->rutaImgTexturaDanio = rutaImgTexturaDanio;
+    this->rutaImgTexturaHabilidad = rutaImgTexturaHabilidad;
 }
 
 Personaje::~Personaje() {
@@ -61,7 +63,12 @@ const Texture& Personaje::getTexturaIdle() const {
 const Texture& Personaje::getTexturaDanio() const {
     return texturaDanio;
 }
-
+const Texture& Personaje::getTexturaHabilidad() const {
+    return texturaHabilidad;
+}
+int Personaje::getContadorHabilidad() const {
+    return contadorHabilidad;
+}
 void Personaje::recibirDanio(){
     if(Personaje::getArmadura()>0){
         Personaje::setArmadura(Personaje::getArmadura() - 1);
@@ -82,8 +89,9 @@ CasperNull::CasperNull() : Personaje(
      "lo elimina al instante.\n"},
     1, 1, 2,
     "imagenes/personaje-casper-null.png",
-    "img/texturaPersonajes/casper_null_idle_1.png",
-    "img/texturaPersonajes/casper_null_danio.png",
+    "img/texturaPersonajes/casper_null_idle_sheet.png",
+    "img/texturaPersonajes/casper_null_danio_sheet.png",
+    "img/texturaPersonajes/casper_null_habilidad_sheet.png",
     {Color(225, 85, 40), Color(220, 175, 60)}) {
 }
 
@@ -107,8 +115,10 @@ DunbarYunque::DunbarYunque() : Personaje(
     "puntaje del ranking."},
     2, 2, 1,
     "imagenes/personaje-dunbar-yunque.png",
-    "img/texturaPersonajes/dunbar_yunque_idle_1.png",
-    "img/texturaPersonajes/dunbar_yunque_idle_1.png",
+    "img/texturaPersonajes/dunbar_yunque_idle_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_danio_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_habilidad_sheet.png",
+
     {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
 
@@ -131,13 +141,15 @@ TessKnot::TessKnot() : Personaje(
      "y el escaneo tiene 5 turnos de recarga."},
     2, 0, 3,
     "imagenes/personaje-tess-knot.png",
-    "img/texturaPersonajes/tess_knot_idle_1.png",
-    "img/texturaPersonajes/tess_knot_idle_1.png",
+    "img/texturaPersonajes/tess_knot_idle_sheet.png",
+    "img/texturaPersonajes/tess_knot_danio_sheet.png",
+    "img/texturaPersonajes/tess_knot_habilidad_sheet.png",
     {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
 
 void TessKnot::habilidad() {
     if (!usarHabilidad()) return;
+
 }
 
 TessKnot::~TessKnot() {}

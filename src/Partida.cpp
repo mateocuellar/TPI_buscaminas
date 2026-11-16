@@ -9,6 +9,8 @@ Partida::Partida() {
     gen.seed(rd());
     personaje = nullptr;
     perdio = false;
+    mostrandoDanio = false;
+    mostrandoHabilidad = false;
 
     cantBombas = 0;
     tiempoFinal = 0;
@@ -28,6 +30,7 @@ Partida::~Partida() {
 
 bool Partida::cargarRecursos() {
     if (!font.openFromFile("fuente.TTF")) return false;
+    if (!fontNum.openFromFile("fuentenumeros.TTF")) return false;
     if (!texturaBomba.loadFromFile("img/bomba.png")) return false;
     if (!texturaBandera.loadFromFile("img/bandera.png")) return false;
     if (!texturaHud.loadFromFile("img/hud.png")) return false;
@@ -42,9 +45,65 @@ bool Personaje::cargarTexturasPersonajes() {
     if(!textura.loadFromFile(rutaImagen)) return false;
     if(!texturaIdle.loadFromFile(rutaImagenTexturaIdle)) return false;
     if(!texturaDanio.loadFromFile(rutaImgTexturaDanio)) return false;
+    if(rutaImgTexturaHabilidad != "" && !texturaHabilidad.loadFromFile(rutaImgTexturaHabilidad)) return false;
     return true;
 }
 
+bool Partida::esBomba(int idx){
+    for (int j = 0; j < indicesBombas.size(); j++) {
+        if (idx == indicesBombas[j]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Partida::calcularNumeros() {
+    numeros.assign(botones.size(), 0);
+
+    for (int col = 0; col < cantCuadradosX; col++) {
+        for (int fila = 0; fila < cantCuadradosY; fila++) {
+            int idx = col * cantCuadradosY + fila;
+            if (esBomba(idx)) continue;
+
+            int cant = 0;
+            for (int dc = -1; dc <= 1; dc++) {
+                for (int df = -1; df <= 1; df++) {
+                    int c = col + dc;
+                    int f = fila + df;
+
+                    if (c < 0 || c >= cantCuadradosX) continue;
+                    if (f < 0 || f >= cantCuadradosY) continue;
+
+                    if (esBomba(c * cantCuadradosY + f)) {
+                        cant++;
+                    }
+                }
+            }
+            numeros[idx] = cant;
+        }
+    }
+}
+void Partida::destaparRecursivo(int col, int fila) {
+    if (col < 0 || col >= cantCuadradosX) return;
+    if (fila < 0 || fila >= cantCuadradosY) return;
+
+    int idx = col * cantCuadradosY + fila;
+
+    if (!bloqueVisible[idx]) return;
+    if (banderaActiva[idx]) return;
+    if (esBomba(idx)) return;
+
+    bloqueVisible[idx] = false;
+
+    if (numeros[idx] > 0) return;
+
+    for (int dc = -1; dc <= 1; dc++) {
+        for (int df = -1; df <= 1; df++) {
+            destaparRecursivo(col + dc, fila + df);
+        }
+    }
+}
 void Partida::destapar(int idx) {
     if (!bloqueVisible[idx]) return;
     if (banderaActiva[idx]) return;
@@ -59,9 +118,10 @@ void Partida::destapar(int idx) {
 
     if (clickeoBomba) {
         personaje->recibirDanio();
-        spritePersonaje->setTexture(personaje->getTexturaDanio());
+
         relojDanio.restart();
         mostrandoDanio = true;
+
         if(personaje->getVida()==0){
             perdio = true;
             tiempoFinal = reloj.getElapsedTime().asSeconds();
@@ -71,21 +131,7 @@ void Partida::destapar(int idx) {
         }
     } else {
         puntuacion += 2;
-        bloqueVisible[idx] = false;
-        int offsets[] = {-12, -11, -10, -1, 0, 1, 10, 11, 12};
-        for (int k = 0; k < 9; k++) {
-            int vecino = idx + offsets[k];
-            if (vecino < 0 || vecino >= (int)botones.size()) continue;
-
-            bool esBomba = false;
-            for (int j = 0; j < indicesBombas.size(); j++) {
-                if (vecino == indicesBombas[j]) {
-                    esBomba = true;
-                    break;
-                }
-            }
-            if (!esBomba) bloqueVisible[vecino] = false;
-        }
+        destaparRecursivo(idx / cantCuadradosY, idx % cantCuadradosY);
     }
 }
 
@@ -93,8 +139,8 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamVentana = window.getSize();
 
     spritePersonaje.emplace(personaje->getTexturaIdle());
-    Vector2u tamPj = personaje->getTexturaIdle().getSize();
-    spritePersonaje->setScale({tamCuadrado / tamPj.x, tamCuadrado / tamPj.y});
+    spritePersonaje->setScale({1.5f, 1.5f});
+    spritePersonaje->setOrigin({32.f, 60.f});
     fondo.emplace(texturaFondo);
 
     Vector2u tamFondo = texturaFondo.getSize();
@@ -146,7 +192,10 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     bloqueVisible.assign(botones.size(), true);
     banderaActiva.assign(botones.size(), false);
 
-    uniform_int_distribution<int> distBomb(5, 15);
+    int cantMinBombas = 20;
+    int cantMaxBombas = 30;
+
+    uniform_int_distribution<int> distBomb(cantMinBombas, cantMaxBombas);
     cantBombas = distBomb(gen);
     textoCantidadBombas->setString("CANTIDAD DE BOMBAS: " + to_string(cantBombas));
 
@@ -154,6 +203,9 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     iota(indices.begin(), indices.end(), 0);
     shuffle(indices.begin(), indices.end(), gen);
     indicesBombas.assign(indices.begin(), indices.begin() + cantBombas);
+
+    calcularNumeros();
+    textoNumero.emplace(fontNum, "", 36);
 
     Vector2u tamBomba = texturaBomba.getSize();
     float escalaX = tamCuadrado / tamBomba.x;
@@ -255,7 +307,13 @@ void Partida::ejecutar(RenderWindow& window) {
                         cursorCol++;
                     }
                     if (keyPressed->code == Keyboard::Key::E){
+                        int usosAntes = personaje->getContadorHabilidad();
                         personaje->habilidad();
+                        if (personaje->getContadorHabilidad() > usosAntes) {
+
+                            relojAnim.restart();
+                            mostrandoHabilidad = true;
+                        }
                     }
 
                     int idx = cursorCol * cantCuadradosY + cursorFila;
@@ -282,8 +340,8 @@ void Partida::ejecutar(RenderWindow& window) {
                             cursorFila = i % cantCuadradosY;
                             personajeColocado = true;
                             window.setMouseCursorVisible(false);
-                            destapar(i);
                             reloj.restart();
+                            destapar(i);
                             break;
                         }
                     }
@@ -326,6 +384,30 @@ void Partida::ejecutar(RenderWindow& window) {
         window.draw(*textoPasiva);
 
         for (const auto& b : bombas) window.draw(b);
+
+        for (size_t i = 0; i < botones.size(); i++) {
+            if (esBomba(i) || numeros[i] == 0) continue;
+
+            textoNumero->setString(to_string(numeros[i]));
+
+            if (numeros[i] == 1) textoNumero->setFillColor(Color::Blue);
+            else if (numeros[i] == 2) textoNumero->setFillColor(Color::Green);
+            else if (numeros[i] == 3) textoNumero->setFillColor(Color::Red);
+            else textoNumero->setFillColor(Color::Yellow);
+
+            textoNumero->setOutlineColor(Color::Black);
+            textoNumero->setOutlineThickness(1.5f);
+
+            FloatRect lb = textoNumero->getLocalBounds();
+            Vector2f posNum = botones[i].getPosition();
+            textoNumero->setPosition(Vector2f(
+                posNum.x + (tamCuadrado - lb.size.x) / 2.f - lb.position.x,
+                posNum.y + (tamCuadrado - lb.size.y) / 2.f - lb.position.y
+            ));
+
+            window.draw(*textoNumero);
+        }
+
         for (size_t i = 0; i < botones.size(); i++) {
             if (bloqueVisible[i]) window.draw(botones[i]);
         }
@@ -335,13 +417,40 @@ void Partida::ejecutar(RenderWindow& window) {
                 window.draw(*bandera);
             }
         }
-        if (mostrandoDanio && relojDanio.getElapsedTime().asSeconds() >= 1.f && !perdio) {
-        spritePersonaje->setTexture(personaje->getTexturaIdle());
-        mostrandoDanio = false;
-}
+        int frame = 0;
+
+        if (mostrandoDanio) {
+            frame = relojDanio.getElapsedTime().asSeconds() / 0.12f;
+            if (frame >= 4) {
+                if (perdio) frame = 3;
+                else mostrandoDanio = false;
+            }
+        }
+
+        if (mostrandoHabilidad && !mostrandoDanio) {
+            frame = relojAnim.getElapsedTime().asSeconds() / 0.15f;
+            if (frame >= 5) mostrandoHabilidad = false;
+        }
+
+        if (mostrandoDanio) {
+            spritePersonaje->setTexture(personaje->getTexturaDanio());
+            spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
+            spritePersonaje->setOrigin({32.f, 60.f});
+        } else if (mostrandoHabilidad) {
+            spritePersonaje->setTexture(personaje->getTexturaHabilidad());
+            spritePersonaje->setTextureRect(IntRect({frame * 96, 0}, {96, 96}));
+            spritePersonaje->setOrigin({48.f, 84.f});
+        } else {
+            frame = (int)(relojAnim.getElapsedTime().asSeconds() / 0.5f) % 2;
+            spritePersonaje->setTexture(personaje->getTexturaIdle());
+            spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
+            spritePersonaje->setOrigin({32.f, 60.f});
+        }
+
         if (personajeColocado) {
             int idxPj = cursorCol * cantCuadradosY + cursorFila;
-            spritePersonaje->setPosition(botones[idxPj].getPosition());
+            Vector2f pos = botones[idxPj].getPosition();
+            spritePersonaje->setPosition({pos.x + tamCuadrado / 2.f, pos.y + tamCuadrado});
             window.draw(*spritePersonaje);
         }
 

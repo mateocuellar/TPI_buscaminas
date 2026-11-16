@@ -273,4 +273,3 @@ bool ranking::registrarPuntaje(int idUser, const string& nombreUser, int puntos,
     }
     return false;
 }
-

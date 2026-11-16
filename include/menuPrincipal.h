@@ -39,6 +39,7 @@ private:
     std::optional<sf::Text> textoNuevaPartida;
     std::optional<sf::Text> textoRanking;
     std::optional<sf::Text> textoSalir;
+    std::optional<sf::Text> textoTpi;
 
     sf::Texture texturaFondo;
     std::optional<sf::Sprite> fondo;

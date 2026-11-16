@@ -37,10 +37,10 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
     textoUsuario.emplace(font, "Usuario: ", 24);
     textoUsuario->setPosition(Vector2f(centroX - 250.f, 350.f));
 
-    textoPassword.emplace(font, "Contraseña: ", 24);
+    textoPassword.emplace(font, "Contraseï¿½a: ", 24);
     textoPassword->setPosition(Vector2f(centroX - 250.f, 450.f));
 
-    textoConfirmPassword.emplace(font, "Confirmar contraseña: ", 24);
+    textoConfirmPassword.emplace(font, "Confirmar contraseï¿½a: ", 24);
     textoConfirmPassword->setPosition(Vector2f(centroX - 250.f, 550.f));
 
     textoTitulo.emplace(font, tituloPantalla, 44);
@@ -314,4 +314,3 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
     archivo.close();
     return false;
     }
-

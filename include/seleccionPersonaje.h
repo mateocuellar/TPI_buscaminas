@@ -21,13 +21,16 @@ protected:
     string rutaImagen;
     string rutaImagenTexturaIdle;
     string rutaImgTexturaDanio;
+    string rutaImgTexturaHabilidad;
+
     Texture textura;
     Texture texturaIdle;
     Texture texturaDanio;
+    Texture texturaHabilidad;
+
     Color vecColores[CANT_COLORES];
 public:
-    Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio,const vector<Color>& colores);
-
+    Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio, string rutaImgTexturaHabilidad, const vector<Color>& colores);
     //getters
     string getTexto(TextoPersonaje tipo) const;
     int getVida() const;
@@ -35,13 +38,13 @@ public:
     const Texture& getTextura() const;
     const Texture& getTexturaIdle() const;
     const Texture& getTexturaDanio() const;
+    const Texture& getTexturaHabilidad() const;
 
     ///setters
     void setArmadura(int arm);
     void setVida(int v);
     void setTextura(Texture nuevaTextura);
-    void setContadorHabilidad(int contadorHabilidad);
-
+    int getContadorHabilidad() const;
     bool usarHabilidad();
     virtual void habilidad() = 0;
 
