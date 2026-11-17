@@ -116,7 +116,3 @@ A diferencia de los sistemas lineales simples, existirá un ecosistema relaciona
 <p align="center">
   <img src="imagenes/diagrama-clases.png" alt="Diagrama de clases del proyecto" width="900">
 </p>
-
-## Nota de autoría y propiedad intelectual
-
-Minesweeper: Elemental Tactics es un software original desarrollado en 2026 por estudiantes de la Tecnicatura Superior en Programación. El presente informe técnico incorpora material visual conceptual generado mediante herramientas de Inteligencia Artificial. Los nombres, ilustraciones y recursos gráficos constituyen propiedad intelectual de sus respectivos autores. La narrativa de la “ciudad perdida”, las mecánicas elementales y los sistemas derivados son de autoría exclusiva del equipo de desarrollo, utilizando como base algorítmica las reglas lógicas del clásico y reconocido videojuego Minesweeper (Buscaminas).
