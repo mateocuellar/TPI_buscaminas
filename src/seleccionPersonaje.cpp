@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio, string rutaImgTexturaHabilidad, const vector<Color>& colores) {
+Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector <string> rutaImagenes, const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
@@ -16,11 +16,11 @@ Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int ma
     this->vida = vida;
     this->armadura = armadura;
     this->maxUsoHabilidad = maxUsoHabilidad;
-    this->rutaImagen = rutaImagen;
-    this->rutaImagenTexturaIdle = rutaImagenTexturaIdle;
-    this->rutaImgTexturaDanio = rutaImgTexturaDanio;
-    this->rutaImgTexturaDanio = rutaImgTexturaDanio;
-    this->rutaImgTexturaHabilidad = rutaImgTexturaHabilidad;
+
+    for (int i = 0;i < CANT_TEXTURAS; i++){
+        this->rutaImagenes[i] = rutaImagenes[i];
+
+    }
 }
 
 Personaje::~Personaje() {
@@ -84,14 +84,15 @@ CasperNull::CasperNull() : Personaje(
      "Filtra la informacion falsa de las Minas\n"
      "de Radiacion y muestra el numero real. \n"
      "Tiene un intento de bandera erronea por \n"
-     "nivel sin penalizacion. \n"
+     "nivel sin penalizacion. \n\n"
      "Es fragil: 1 vida menos y una Mina de Fuego \n"
      "lo elimina al instante.\n"},
     1, 1, 2,
-    "imagenes/personaje-casper-null.png",
+    {"imagenes/personaje-casper-null.png",
     "img/texturaPersonajes/casper_null_idle_sheet.png",
     "img/texturaPersonajes/casper_null_danio_sheet.png",
     "img/texturaPersonajes/casper_null_habilidad_sheet.png",
+    "img/texturaPersonajes/casper_null_hud.png"},
     {Color(225, 85, 40), Color(220, 175, 60)}) {
 }
 
@@ -114,10 +115,11 @@ DunbarYunque::DunbarYunque() : Personaje(
     "y cada bandera mal puesta le baja el \n"
     "puntaje del ranking."},
     2, 2, 1,
-    "imagenes/personaje-dunbar-yunque.png",
+    {"imagenes/personaje-dunbar-yunque.png",
     "img/texturaPersonajes/dunbar_yunque_idle_sheet.png",
     "img/texturaPersonajes/dunbar_yunque_danio_sheet.png",
     "img/texturaPersonajes/dunbar_yunque_habilidad_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_hud.png"},
 
     {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
@@ -140,10 +142,11 @@ TessKnot::TessKnot() : Personaje(
      "no es inmune a ningun estado, \n"
      "y el escaneo tiene 5 turnos de recarga."},
     2, 0, 3,
-    "imagenes/personaje-tess-knot.png",
+    {"imagenes/personaje-tess-knot.png",
     "img/texturaPersonajes/tess_knot_idle_sheet.png",
     "img/texturaPersonajes/tess_knot_danio_sheet.png",
     "img/texturaPersonajes/tess_knot_habilidad_sheet.png",
+    "img/texturaPersonajes/tess_knot_hud.png"},
     {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
 

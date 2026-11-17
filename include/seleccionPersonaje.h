@@ -9,6 +9,7 @@ using namespace std;
 using namespace sf;
 
 enum TextoPersonaje { NOMBRE, HABILIDAD, PASIVA, DESCRIPCION, CANT_TEXTOS };
+enum TexturasPersonaje { FOTO, IDLE, ANIMDANIO, ANIMHABILIDAD, HUD, CANT_TEXTURAS };
 enum ColoresPersonaje { colorHabilidad, colorPasiva, CANT_COLORES };
 
 class Personaje{
@@ -18,10 +19,8 @@ protected:
     int armadura;
     int maxUsoHabilidad;
     int contadorHabilidad = 0;
-    string rutaImagen;
-    string rutaImagenTexturaIdle;
-    string rutaImgTexturaDanio;
-    string rutaImgTexturaHabilidad;
+
+    string rutaImagenes[CANT_TEXTURAS];
 
     Texture textura;
     Texture texturaIdle;
@@ -30,7 +29,7 @@ protected:
 
     Color vecColores[CANT_COLORES];
 public:
-    Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, string rutaImagen, string rutaImagenTexturaIdle, string rutaImgTexturaDanio, string rutaImgTexturaHabilidad, const vector<Color>& colores);
+    Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector <string>rutaImagenes, const vector<Color>& colores);
     //getters
     string getTexto(TextoPersonaje tipo) const;
     int getVida() const;

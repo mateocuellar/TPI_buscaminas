@@ -44,10 +44,10 @@ bool Partida::cargarRecursos() {
 }
 
 bool Personaje::cargarTexturasPersonajes() {
-    if(!textura.loadFromFile(rutaImagen)) return false;
-    if(!texturaIdle.loadFromFile(rutaImagenTexturaIdle)) return false;
-    if(!texturaDanio.loadFromFile(rutaImgTexturaDanio)) return false;
-    if(rutaImgTexturaHabilidad != "" && !texturaHabilidad.loadFromFile(rutaImgTexturaHabilidad)) return false;
+    if(!textura.loadFromFile(rutaImagenes[FOTO])) return false;
+    if(!texturaIdle.loadFromFile(rutaImagenes[IDLE])) return false;
+    if(!texturaDanio.loadFromFile(rutaImagenes[ANIMDANIO])) return false;
+    if(!texturaHabilidad.loadFromFile(rutaImagenes[ANIMHABILIDAD])) return false;
     return true;
 }
 

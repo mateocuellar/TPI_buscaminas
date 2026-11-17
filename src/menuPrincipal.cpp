@@ -138,8 +138,8 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     Color colorBtn(255, 107, 53);
 
     float anchoBoton = 340.f;
-    float altoBoton = 52.f;
-    float espaciado = 66.f;
+    float altoBoton = 65.f;
+    float espaciado = altoBoton + 20.f;
 
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
@@ -155,7 +155,7 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     titulo2.emplace(font, "ELEMENTAL TACTICS", 60);
     titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 105.f));
 
-    float inicioY = titulo2->getPosition().y + 95.f;
+    float inicioY = titulo2->getPosition().y + 150.f;
 
     btnLogin.emplace(Vector2f(anchoBoton, altoBoton));
     btnLogin->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY));
