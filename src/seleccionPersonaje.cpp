@@ -1,4 +1,5 @@
 #include "seleccionPersonaje.h"
+#include "menuPrincipal.h"
 #include "partida.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -37,9 +38,7 @@ int Personaje::getArmadura() const{
 void Personaje::setArmadura(int arm){
     armadura = arm;
 }
-void Personaje::setTextura(Texture nuevaTextura){
-    texturaIdle = nuevaTextura;
-}
+
 
 void Personaje::setVida(int v){
     vida = v;
@@ -54,18 +53,10 @@ bool Personaje::usarHabilidad(){
 Color Personaje::getColor(ColoresPersonaje color) const {
     return vecColores[color];
 }
-const Texture& Personaje::getTextura() const {
-    return textura;
+const Texture& Personaje::getTextura(TexturasPersonaje tipo) const {
+    return vecTexturas[tipo];
 }
-const Texture& Personaje::getTexturaIdle() const {
-    return texturaIdle;
-}
-const Texture& Personaje::getTexturaDanio() const {
-    return texturaDanio;
-}
-const Texture& Personaje::getTexturaHabilidad() const {
-    return texturaHabilidad;
-}
+
 int Personaje::getContadorHabilidad() const {
     return contadorHabilidad;
 }
@@ -202,7 +193,7 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
 
-    float anchoBoton = 950.f, altoBoton = 250.f;
+    float anchoBoton = 800.f, altoBoton = 250.f;
     float margen = 20.f;
     float anchoImg = altoBoton - (margen * 2.f);
     float altoImg = altoBoton - (margen * 2.f);
@@ -225,16 +216,16 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         boton.setFillColor(colorNormal);
         botones.push_back(boton);
 
-        Text nombre(font, personajes[i]->getTexto(NOMBRE), 26);
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 34);
         nombre.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen));
         nombres.push_back(nombre);
 
-        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 18);
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 22);
         desc.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen + 38.f));
         descripciones.push_back(desc);
 
-        Sprite sprite(personajes[i]->getTextura());
-        Vector2u tam = personajes[i]->getTextura().getSize();
+        Sprite sprite(personajes[i]->getTextura(FOTO));
+        Vector2u tam = personajes[i]->getTextura(FOTO).getSize();
         sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
         sprite.setPosition(Vector2f(xBoton + margen, y + margen));
         sprites.push_back(sprite);
@@ -278,6 +269,7 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
                 botones[i].setFillColor(colorHover);
                 botones[i].setOutlineColor(colorBorde);
                 botones[i].setOutlineThickness(3.f);
+
             } else {
                 botones[i].setFillColor(colorNormal);
                 botones[i].setOutlineThickness(0.f);
@@ -289,10 +281,12 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         window.draw(capaOscura);
 
         for (size_t i = 0; i < botones.size(); i++) {
+
             window.draw(botones[i]);
             window.draw(sprites[i]);
-            window.draw(nombres[i]);
-            window.draw(descripciones[i]);
+            dibujarConSombra(window, nombres[i], 2.f);
+            dibujarConSombra(window, descripciones[i], 2.f);
+
         }
         window.display();
     }

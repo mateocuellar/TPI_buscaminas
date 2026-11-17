@@ -137,8 +137,8 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
 
     Color colorBtn(255, 107, 53);
 
-    float anchoBoton = 340.f;
-    float altoBoton = 65.f;
+    float anchoBoton = 400.f;
+    float altoBoton = 75.f;
     float espaciado = altoBoton + 20.f;
 
     fondo.emplace(texturaFondo);
@@ -149,11 +149,11 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     ));
     fondo->setPosition(Vector2f(0,0));
 
-     titulo.emplace(font, "MINESWEEPER:", 96);
+     titulo.emplace(font, "MINESWEEPER:", 120);
     titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, tamVentana.y * 0.10f));
 
-    titulo2.emplace(font, "ELEMENTAL TACTICS", 60);
-    titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 105.f));
+    titulo2.emplace(font, "ELEMENTAL TACTICS", 80);
+    titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 120.f));
 
     float inicioY = titulo2->getPosition().y + 150.f;
 
@@ -255,7 +255,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-                                       if (btnLogin->getGlobalBounds().contains(mousePos)) {
+                    if (btnLogin->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Login..." << endl;
                         registroUsuario ui;
                         if (ui.mostrarLogin(window)) {
@@ -305,7 +305,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
             }
         }
 
-        window.clear(Color(24, 33, 43));
+        window.clear();
 
         window.draw(*fondo);
 

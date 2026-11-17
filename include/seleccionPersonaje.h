@@ -22,10 +22,7 @@ protected:
 
     string rutaImagenes[CANT_TEXTURAS];
 
-    Texture textura;
-    Texture texturaIdle;
-    Texture texturaDanio;
-    Texture texturaHabilidad;
+    Texture vecTexturas[CANT_TEXTURAS];
 
     Color vecColores[CANT_COLORES];
 public:
@@ -34,10 +31,7 @@ public:
     string getTexto(TextoPersonaje tipo) const;
     int getVida() const;
     int getArmadura() const;
-    const Texture& getTextura() const;
-    const Texture& getTexturaIdle() const;
-    const Texture& getTexturaDanio() const;
-    const Texture& getTexturaHabilidad() const;
+    const Texture& getTextura(TexturasPersonaje tipo) const;
 
     ///setters
     void setArmadura(int arm);

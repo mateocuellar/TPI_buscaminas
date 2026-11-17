@@ -1,6 +1,7 @@
 #include "Partida.h"
 #include "ranking.h"
 #include "seleccionPersonaje.h"
+#include "menuPrincipal.h"
 
 using namespace std;
 using namespace sf;
@@ -44,10 +45,9 @@ bool Partida::cargarRecursos() {
 }
 
 bool Personaje::cargarTexturasPersonajes() {
-    if(!textura.loadFromFile(rutaImagenes[FOTO])) return false;
-    if(!texturaIdle.loadFromFile(rutaImagenes[IDLE])) return false;
-    if(!texturaDanio.loadFromFile(rutaImagenes[ANIMDANIO])) return false;
-    if(!texturaHabilidad.loadFromFile(rutaImagenes[ANIMHABILIDAD])) return false;
+    for (int i = 0;i < CANT_TEXTURAS; i++){
+        if(!vecTexturas[i].loadFromFile(rutaImagenes[i])) return false;
+    }
     return true;
 }
 
@@ -157,7 +157,7 @@ bool Partida::inicializarTablero(RenderWindow& window) {
 
     Vector2u tamVentana = Vector2u(window.getView().getSize());
 
-    spritePersonaje.emplace(personaje->getTexturaIdle());
+    spritePersonaje.emplace(personaje->getTextura(IDLE));
     spritePersonaje->setScale({1.5f, 1.5f});
     spritePersonaje->setOrigin({32.f, 60.f});
     fondo.emplace(texturaFondo);
@@ -255,6 +255,9 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     hud->setScale({1920.f / tamHud.x, 250.f / tamHud.y});
     hud->setPosition({0, 830.f});
 
+    spritePersonajeHud.emplace(personaje->getTextura(HUD));
+    spritePersonajeHud->setPosition(Vector2f(150, tamVentana.y - 250));
+
     bombaHud.emplace(texturaBomba);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
     bombaHud->setPosition(Vector2f(550, tamVentana.y - 70));
@@ -288,7 +291,7 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoStatus.emplace(font, "ESTADO", 36);
     textoStatus->setPosition(Vector2f(800, tamVentana.y - 240));
 
-        textoCommands.emplace(font, "COMANDOS", 36);
+    textoCommands.emplace(font, "COMANDOS", 36);
     textoCommands->setPosition(Vector2f(1280, tamVentana.y - 240));
 
     string comandos[4] = {"E - Habilidad", "B - Bandera", "R - Revelar", "WASD - Mover"};
@@ -399,23 +402,24 @@ void Partida::ejecutar(RenderWindow& window, const string& usuario) {
         window.draw(*fondo);
 
         window.draw(*hud);
+        window.draw(*spritePersonajeHud);
         window.draw(*textoTimer);
         window.draw(*bombaHud);
         window.draw(*textoCantidadBombas);
         window.draw(*vidaHud);
-        window.draw(*textoVidaActual);
+        dibujarConSombra(window, *textoVidaActual, 3.f);
         window.draw(*armaduraHud);
-        window.draw(*textoArmaduraActual);
-        window.draw(*textoStatus);
-        window.draw(*textoCommands);
-
+        dibujarConSombra(window, *textoArmaduraActual, 3.f);
+        dibujarConSombra(window, *textoStatus, 3.f);
+        dibujarConSombra(window, *textoCommands, 3.f);
         for (int i = 0; i < vecTextoCommands.size(); i++) {
             window.draw(vecTextoCommands[i]);
         }
 
-        window.draw(*textoPersonaje);
-        window.draw(*textoHablidad);
-        window.draw(*textoPasiva);
+        dibujarConSombra(window, *textoPersonaje, 3.f);
+        dibujarConSombra(window, *textoHablidad, 3.f);
+        dibujarConSombra(window, *textoPasiva, 3.f);
+
 
         for (const auto& b : bombas) window.draw(b);
 
@@ -468,16 +472,16 @@ void Partida::ejecutar(RenderWindow& window, const string& usuario) {
         }
 
         if (mostrandoDanio) {
-            spritePersonaje->setTexture(personaje->getTexturaDanio());
+            spritePersonaje->setTexture(personaje->getTextura(ANIMDANIO));
             spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
             spritePersonaje->setOrigin({32.f, 60.f});
         } else if (mostrandoHabilidad) {
-            spritePersonaje->setTexture(personaje->getTexturaHabilidad());
+            spritePersonaje->setTexture(personaje->getTextura(ANIMHABILIDAD));
             spritePersonaje->setTextureRect(IntRect({frame * 96, 0}, {96, 96}));
             spritePersonaje->setOrigin({48.f, 84.f});
         } else {
             frame = (int)(relojAnim.getElapsedTime().asSeconds() / 0.5f) % 2;
-            spritePersonaje->setTexture(personaje->getTexturaIdle());
+            spritePersonaje->setTexture(personaje->getTextura(IDLE));
             spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
             spritePersonaje->setOrigin({32.f, 60.f});
         }
