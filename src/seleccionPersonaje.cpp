@@ -84,7 +84,7 @@ CasperNull::CasperNull() : Personaje(
      "Filtra la informacion falsa de las Minas\n"
      "de Radiacion y muestra el numero real. \n"
      "Tiene un intento de bandera erronea por \n"
-     "nivel sin penalizacion. \n\n"
+     "nivel sin penalizacion. \n"
      "Es fragil: 1 vida menos y una Mina de Fuego \n"
      "lo elimina al instante.\n"},
     1, 1, 2,
@@ -161,7 +161,7 @@ void borrarPersonajes(vector<Personaje*>& personajes) {
 }
 
 Personaje* seleccionPersonaje(RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     Texture texturaFondo;
     Font font, fontText;
@@ -199,12 +199,15 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
 
-    float anchoBoton = 850.f, altoBoton = 300.f;
-    float anchoImg = altoBoton - 30, altoImg = altoBoton - 30;
-    float inicioY = tamVentana.y / 2 - altoBoton / 2;
-    float espaciado = 350.f;
-    float margen = 30.f;
-    float primeraY = inicioY - espaciado;
+    float anchoBoton = 950.f, altoBoton = 250.f;
+    float margen = 20.f;
+    float anchoImg = altoBoton - (margen * 2.f);
+    float altoImg = altoBoton - (margen * 2.f);
+    float espaciado = 280.f;
+
+
+    float altoTotal = (altoBoton * 3.f) + ((espaciado - altoBoton) * 2.f);
+    float primeraY = (tamVentana.y - altoTotal) / 2.f;
 
     vector<RectangleShape> botones;
     vector<Text> nombres, descripciones;
@@ -219,20 +222,21 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         boton.setFillColor(colorNormal);
         botones.push_back(boton);
 
-        Text nombre(font, personajes[i]->getTexto(NOMBRE), 30);
-        nombre.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen / 2));
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 26);
+        nombre.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen));
         nombres.push_back(nombre);
 
-        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 24);
-        desc.setPosition(Vector2f(xBoton + margen + anchoImg, y + margen * 2));
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 18);
+        desc.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen + 38.f));
         descripciones.push_back(desc);
 
         Sprite sprite(personajes[i]->getTextura());
         Vector2u tam = personajes[i]->getTextura().getSize();
         sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
-        sprite.setPosition(Vector2f((tamVentana.x - anchoBoton + margen) / 2.f, y + margen / 2));
+        sprite.setPosition(Vector2f(xBoton + margen, y + margen));
         sprites.push_back(sprite);
     }
+
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {

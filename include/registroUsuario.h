@@ -37,19 +37,19 @@ private:
     std::string stringUsuario;
     std::string stringPassword;
     std::string stringConfirmPassword;
-    bool campoSeleccionado;
+    int campoSeleccionado=0;
 
     bool cargarRecursos();
     void inicializarComponentes(sf::RenderWindow& window, const std::string& tituloPantalla);
 
 
     bool guardarUsuarioNuevo(const std::string& user, const std::string& pass);
-    bool verificarCredenciales(const std::string& user, const std::string& pass, const std::string& confirmPass);
+    bool verificarCredenciales(const std::string& user, const std::string& pass);
 
 public:
     registroUsuario();
 
-
+    std::string getUsuarioActual() const { return stringUsuario; }
     bool mostrarLogin(sf::RenderWindow& window);
     void mostrarRegistro(sf::RenderWindow& window);
 };

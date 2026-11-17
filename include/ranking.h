@@ -38,6 +38,8 @@ public:
     void mostrar(sf::RenderWindow& window);
 
 
+
+
     static bool registrarPuntaje(int idUser, const std::string& nombreUser, int puntos, int segundos, int lvl);
 };
 

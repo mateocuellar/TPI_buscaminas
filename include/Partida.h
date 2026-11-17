@@ -60,6 +60,10 @@ private:
     vector<int> indicesBombas;
 
     bool perdio;
+    bool gano;
+    std::optional<sf::Text> textoVictoria;
+    std::string nombreJugador;
+
     float tiempoFinal;
     int puntuacion;
 
@@ -90,7 +94,7 @@ private:
 
 public:
     Partida();
-    void ejecutar(RenderWindow& window);
+    void ejecutar(sf::RenderWindow& window, const std::string& usuario = "Invitado");
     ~Partida();
 };
 

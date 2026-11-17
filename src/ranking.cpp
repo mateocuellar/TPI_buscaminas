@@ -24,18 +24,16 @@ void ranking::leerYProcesarRanking() {
     vector<RegistroRankingBinario> todosLosRegistros;
     RegistroRankingBinario aux;
 
-
     while (archivo.read(reinterpret_cast<char*>(&aux), sizeof(RegistroRankingBinario))) {
         todosLosRegistros.push_back(aux);
     }
     archivo.close();
 
-
     vector<RegistroRankingBinario> filtrados;
     for (const auto& reg : todosLosRegistros) {
         bool encontrado = false;
         for (auto& f : filtrados) {
-            if (f.idUsuario == reg.idUsuario) {
+            if (string(f.nombreUsuario) == string(reg.nombreUsuario)) {
                 encontrado = true;
 
                 if (reg.tiempoSegundos < f.tiempoSegundos) {
@@ -49,8 +47,6 @@ void ranking::leerYProcesarRanking() {
         }
     }
 
-
-
     for (size_t i = 0; i < filtrados.size(); i++) {
         for (size_t j = i + 1; j < filtrados.size(); j++) {
             if (filtrados[i].tiempoSegundos > filtrados[j].tiempoSegundos) {
@@ -59,14 +55,14 @@ void ranking::leerYProcesarRanking() {
         }
     }
 
-
     for (size_t i = 0; i < filtrados.size() && i < 10; i++) {
         listaPuntajes.push_back(filtrados[i]);
     }
 }
 
+
 void ranking::inicializarComponentes(RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
     float centroX = tamVentana.x / 2.f;
 
 

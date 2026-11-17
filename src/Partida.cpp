@@ -1,4 +1,5 @@
 #include "Partida.h"
+#include "ranking.h"
 #include "seleccionPersonaje.h"
 
 using namespace std;
@@ -9,6 +10,7 @@ Partida::Partida() {
     gen.seed(rd());
     personaje = nullptr;
     perdio = false;
+    gano=false;
     mostrandoDanio = false;
     mostrandoHabilidad = false;
 
@@ -132,11 +134,28 @@ void Partida::destapar(int idx) {
     } else {
         puntuacion += 2;
         destaparRecursivo(idx / cantCuadradosY, idx % cantCuadradosY);
+
+        bool todasDestapadas = true;
+        for (size_t i = 0; i < botones.size(); i++) {
+            if (!esBomba(i) && bloqueVisible[i]) {
+                todasDestapadas = false;
+                break;
+            }
+        }
+
+        if (todasDestapadas) {
+    gano = true;
+    tiempoFinal = reloj.getElapsedTime().asSeconds();
+    puntuacion += 100;
+    ranking::registrarPuntaje(0, nombreJugador, puntuacion, static_cast<int>(tiempoFinal), 1);
+}
+
     }
 }
 
 bool Partida::inicializarTablero(RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     spritePersonaje.emplace(personaje->getTexturaIdle());
     spritePersonaje->setScale({1.5f, 1.5f});
@@ -157,7 +176,7 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoCantidadBombas.emplace(font, "", 30);
     textoCantidadBombas->setPosition(Vector2f(150, tamVentana.y - 60));
 
-    ///para gameover
+
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
 
@@ -169,6 +188,16 @@ bool Partida::inicializarTablero(RenderWindow& window) {
         limites.position.y + limites.size.y / 2.f
     ));
     textoGameOver->setPosition(Vector2f(tamVentana.x / 2.f, tamVentana.y / 2.f));
+
+    textoVictoria.emplace(font, "VICTORIA!", 80);
+    textoVictoria->setFillColor(Color::Green);
+    FloatRect limitesVic = textoVictoria->getGlobalBounds();
+    textoVictoria->setOrigin(Vector2f(
+    limitesVic.position.x + limitesVic.size.x / 2.f,
+    limitesVic.position.y + limitesVic.size.y / 2.f
+    ));
+    textoVictoria->setPosition(Vector2f(tamVentana.x / 2.f, tamVentana.y / 2.f));
+
 
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
@@ -259,23 +288,25 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoStatus.emplace(font, "ESTADO", 36);
     textoStatus->setPosition(Vector2f(800, tamVentana.y - 240));
 
-    textoCommands.emplace(font, "COMANDOS", 36);
+        textoCommands.emplace(font, "COMANDOS", 36);
     textoCommands->setPosition(Vector2f(1280, tamVentana.y - 240));
 
-    string comandos[4] = {"E - Habilidad", "F - Bandera", "Q - Detonar", "R - Adyacente"};
+    string comandos[4] = {"E - Habilidad", "B - Bandera", "R - Revelar", "WASD - Mover"};
 
-    for(int i = 0;i < 4; i++){
+    for(int i = 0; i < 4; i++){
         Text textocomandos(font, comandos[i], 36);
         textocomandos.setPosition(Vector2f(1280, tamVentana.y - 190 + 40*i));
         vecTextoCommands.push_back(textocomandos);
     }
 
     return true;
+
 }
 
-void Partida::ejecutar(RenderWindow& window) {
+void Partida::ejecutar(RenderWindow& window, const string& usuario) {
+    nombreJugador = usuario;
     if (!cargarRecursos()) return;
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     personaje = seleccionPersonaje(window);
     if (personaje == nullptr) return;
@@ -283,34 +314,34 @@ void Partida::ejecutar(RenderWindow& window) {
     if (!inicializarTablero(window)) return;
 
     while (window.isOpen()) {
-                while (const optional event = window.pollEvent()) {
+        while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>())
                 window.close();
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
-                if (keyPressed->code == Keyboard::Key::Escape || perdio) {
+                if (keyPressed->code == Keyboard::Key::Escape || perdio || gano) {
+
                     window.setMouseCursorVisible(true);
                     return;
                 }
 
                 if (personajeColocado) {
-                    if (keyPressed->code == Keyboard::Key::W && cursorFila > 0){
+                    if (keyPressed->code == Keyboard::Key::W && cursorFila > 0) {
                         cursorFila--;
                     }
-                    if (keyPressed->code == Keyboard::Key::S && cursorFila < cantCuadradosY - 1){
+                    if (keyPressed->code == Keyboard::Key::S && cursorFila < cantCuadradosY - 1) {
                         cursorFila++;
                     }
-                    if (keyPressed->code == Keyboard::Key::A && cursorCol > 0){
+                    if (keyPressed->code == Keyboard::Key::A && cursorCol > 0) {
                         cursorCol--;
                     }
-                    if (keyPressed->code == Keyboard::Key::D && cursorCol < cantCuadradosX - 1){
+                    if (keyPressed->code == Keyboard::Key::D && cursorCol < cantCuadradosX - 1) {
                         cursorCol++;
                     }
-                    if (keyPressed->code == Keyboard::Key::E){
+                    if (keyPressed->code == Keyboard::Key::E) {
                         int usosAntes = personaje->getContadorHabilidad();
                         personaje->habilidad();
                         if (personaje->getContadorHabilidad() > usosAntes) {
-
                             relojAnim.restart();
                             mostrandoHabilidad = true;
                         }
@@ -318,15 +349,18 @@ void Partida::ejecutar(RenderWindow& window) {
 
                     int idx = cursorCol * cantCuadradosY + cursorFila;
 
-                    if (keyPressed->code == Keyboard::Key::Space)
+                    if (keyPressed->code == Keyboard::Key::R) {
                         destapar(idx);
-                    if (keyPressed->code == Keyboard::Key::F)
+                    }
+
+                    if (keyPressed->code == Keyboard::Key::B && bloqueVisible[idx]) {
                         banderaActiva[idx] = !banderaActiva[idx];
+                    }
                 }
             }
 
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
-                if (perdio) {
+                if (perdio || gano) {
                     window.setMouseCursorVisible(true);
                     return;
                 }
@@ -349,13 +383,13 @@ void Partida::ejecutar(RenderWindow& window) {
             }
         }
 
-        if (!perdio && personajeColocado) {
+        if (!perdio && !gano && personajeColocado) {
             int tiempo = reloj.getElapsedTime().asSeconds();
 
-            int minutos = tiempo/60;
-            int segundos = tiempo%60;
+            int minutos = tiempo / 60;
+            int segundos = tiempo % 60;
 
-            textoTimer->setString("TIEMPO: " + to_string((int)minutos) +":"+ to_string((int)segundos));
+            textoTimer->setString("TIEMPO: " + to_string((int)minutos) + ":" + to_string((int)segundos));
         }
         textoArmaduraActual->setString(to_string(personaje->getArmadura()));
         textoVidaActual->setString(to_string(personaje->getVida()));
@@ -375,7 +409,7 @@ void Partida::ejecutar(RenderWindow& window) {
         window.draw(*textoStatus);
         window.draw(*textoCommands);
 
-        for(int i = 0;i < vecTextoCommands.size(); i++){
+        for (int i = 0; i < vecTextoCommands.size(); i++) {
             window.draw(vecTextoCommands[i]);
         }
 
@@ -417,6 +451,7 @@ void Partida::ejecutar(RenderWindow& window) {
                 window.draw(*bandera);
             }
         }
+
         int frame = 0;
 
         if (mostrandoDanio) {
@@ -456,13 +491,29 @@ void Partida::ejecutar(RenderWindow& window) {
 
         if (perdio) {
             textoPuntuacion->setString("Puntuacion total: " + to_string(puntuacion));
-            textoPuntuacion->setPosition(Vector2f((window.getSize().x - textoPuntuacion->getLocalBounds().size.x) / 2.f, window.getSize().y / 2.f + 50));
+            textoPuntuacion->setPosition(Vector2f(
+                (window.getView().getSize().x - textoPuntuacion->getLocalBounds().size.x) / 2.f,
+                window.getView().getSize().y / 2.f + 50
+            ));
 
             window.draw(capaOscura);
             window.draw(*textoGameOver);
             window.draw(*textoTimer);
             window.draw(*textoPuntuacion);
         }
+
+        if (gano) {
+    textoPuntuacion->setString("Puntuacion total: " + to_string(puntuacion));
+    textoPuntuacion->setPosition(Vector2f(
+        (window.getView().getSize().x - textoPuntuacion->getLocalBounds().size.x) / 2.f,
+        window.getView().getSize().y / 2.f + 50
+    ));
+
+    window.draw(capaOscura);
+    window.draw(*textoVictoria);
+    window.draw(*textoTimer);
+    window.draw(*textoPuntuacion);
+}
 
         window.display();
     }

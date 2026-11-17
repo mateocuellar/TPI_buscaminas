@@ -21,15 +21,32 @@ menuPrincipal::menuPrincipal() {
 }
 
 bool menuPrincipal::cargarRecursos() {
-    if (!texturaFondo.loadFromFile("img/fondo_menu.png")) return false;
-    if (!texturaHoja.loadFromFile("img/particulas/hoja1.png")) return false;
-    if (!texturaPolvo.loadFromFile("img/particulas/polvo_grande.png")) return false;
-    if (!texturaBrillo.loadFromFile("img/particulas/glow_sol.png")) return false;
-    return font.openFromFile("fuente.TTF");
+    if (!texturaFondo.loadFromFile("img/fondo_menu.png")) {
+        cout << "Error cargando: img/fondo_menu.png" << endl;
+        return false;
+    }
+    if (!texturaHoja.loadFromFile("img/particulas/hoja1.png")) {
+        cout << "Error cargando: img/particulas/hoja1.png" << endl;
+        return false;
+    }
+    if (!texturaPolvo.loadFromFile("img/particulas/polvo_grande.png")) {
+        cout << "Error cargando: img/particulas/polvo_grande.png" << endl;
+        return false;
+    }
+    if (!texturaBrillo.loadFromFile("img/particulas/glow_sol.png")) {
+        cout << "Error cargando: img/particulas/glow_sol.png" << endl;
+        return false;
+    }
+    if (!font.openFromFile("fuente.TTF")) {
+        cout << "Error cargando: fuente.TTF" << endl;
+        return false;
+    }
+    return true;
 }
 
 void menuPrincipal::crearParticulas(RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
+
 
     random_device rd;
     mt19937 gen(rd());
@@ -92,7 +109,7 @@ void menuPrincipal::crearParticulas(RenderWindow& window) {
 }
 
 void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     static random_device rd;
     static mt19937 gen(rd());
@@ -116,14 +133,13 @@ void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
 }
 
 void menuPrincipal::inicializarComponentes(RenderWindow& window) {
-    Vector2u tamVentana = window.getSize();
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     Color colorBtn(255, 107, 53);
 
-    float anchoBoton = 360.f;
-    float altoBoton = 80.f;
-    float inicioY = 400.f;
-    float espaciado = 100.f;
+    float anchoBoton = 340.f;
+    float altoBoton = 52.f;
+    float espaciado = 66.f;
 
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
@@ -132,6 +148,14 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         static_cast<float>(tamVentana.y) / static_cast<float>(tamFondo.y)
     ));
     fondo->setPosition(Vector2f(0,0));
+
+     titulo.emplace(font, "MINESWEEPER:", 96);
+    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, tamVentana.y * 0.10f));
+
+    titulo2.emplace(font, "ELEMENTAL TACTICS", 60);
+    titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 105.f));
+
+    float inicioY = titulo2->getPosition().y + 95.f;
 
     btnLogin.emplace(Vector2f(anchoBoton, altoBoton));
     btnLogin->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY));
@@ -152,12 +176,6 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnSalir.emplace(Vector2f(anchoBoton/2-30, altoBoton*0.8));
     btnSalir->setPosition(Vector2f(0, 0));
     btnSalir->setFillColor(Color(200,0,0, 100));
-
-    titulo.emplace(font, "MINESWEEPER:", 110);
-    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, 150.f));
-
-    titulo2.emplace(font, "ELEMENTAL TACTICS", 72);
-    titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, 270.f));
 
     textoLogin.emplace(font, "Iniciar Sesion", 28);
     FloatRect boundsLogin = textoLogin->getGlobalBounds();
@@ -195,9 +213,9 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         btnSalir->getPosition().y + (altoBoton*0.8 - boundsSalir.size.y) / 2.f - boundsSalir.position.y
     ));
 
-    textoTpi.emplace(font, "Trabajo Práctico Integrador - Programación II- Universidad Tecnológica Nacional", 28);
-    FloatRect boundsTpi= textoTpi->getGlobalBounds();
-    textoTpi->setPosition(Vector2f(tamVentana.x/2 - boundsTpi.size.x/2 , tamVentana.y-100));
+    textoTpi.emplace(font, U"Trabajo Pr\u00e1ctico Integrador - Programaci\u00f3n II - Universidad Tecnol\u00f3gica Nacional", 20);
+    FloatRect boundsTpi = textoTpi->getGlobalBounds();
+    textoTpi->setPosition(Vector2f((tamVentana.x - boundsTpi.size.x) / 2.f,tamVentana.y - boundsTpi.size.y - 25.f));
 }
 
 void menuPrincipal::ejecutar(RenderWindow& window) {
@@ -205,9 +223,12 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     inicializarComponentes(window);
     crearParticulas(window);
 
+    string usuarioActual = "Invitado";
+
     Color colorBtn(255, 107, 53);
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
+
 
     vector<RectangleShape*> botones;
 
@@ -234,13 +255,14 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-                    if (btnLogin->getGlobalBounds().contains(mousePos)) {
+                                       if (btnLogin->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Login..." << endl;
                         registroUsuario ui;
                         if (ui.mostrarLogin(window)) {
-                            cout << "Login exitoso. Iniciando partida desde Login..." << endl;
+                            usuarioActual = ui.getUsuarioActual();
+                            cout << "Login exitoso (" << usuarioActual << "). Iniciando partida..." << endl;
                             Partida partidaActual;
-                            partidaActual.ejecutar(window);
+                            partidaActual.ejecutar(window, usuarioActual);
                         }
                     }
 
@@ -251,10 +273,11 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                     }
 
                     if (btnPlay->getGlobalBounds().contains(mousePos)) {
-                        cout << "Iniciando partida orientada a objetos..." << endl;
+                        cout << "Iniciando partida como " << usuarioActual << "..." << endl;
                         Partida partidaActual;
-                        partidaActual.ejecutar(window);
+                        partidaActual.ejecutar(window, usuarioActual);
                     }
+
 
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo pantalla de Ranking..." << endl;
