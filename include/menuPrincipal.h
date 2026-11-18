@@ -26,7 +26,6 @@ private:
 
     std::optional<sf::RectangleShape> btnLogin;
     std::optional<sf::RectangleShape> btnRegister;
-    std::optional<sf::RectangleShape> btnPlay;
     std::optional<sf::RectangleShape> btnRanking;
     std::optional<sf::RectangleShape> btnSalir;
 
@@ -36,7 +35,6 @@ private:
     std::optional<sf::Text> sombraTitulo2;
     std::optional<sf::Text> textoLogin;
     std::optional<sf::Text> textoRegister;
-    std::optional<sf::Text> textoNuevaPartida;
     std::optional<sf::Text> textoRanking;
     std::optional<sf::Text> textoSalir;
     std::optional<sf::Text> textoTpi;

@@ -1,5 +1,6 @@
 # depslib dependency file v1.0
-1794944620 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+1794963834 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+	<windows.h>
 	<SFML/Graphics.hpp>
 	"menuPrincipal.h"
 	<clocale>
@@ -541,7 +542,7 @@
 	<string_view>
 	<cstdint>
 
-1794860399 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
+1794964324 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<optional>
@@ -559,7 +560,7 @@
 	<optional>
 	<cmath>
 
-1794889800 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\registrousuario.h
+1794966709 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\registrousuario.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<string>
@@ -567,7 +568,7 @@
 	<vector>
 	<fstream>
 
-1794962853 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
+1794963389 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
 	"Partida.h"
 	"ranking.h"
 	"seleccionPersonaje.h"
@@ -585,7 +586,7 @@
 	<SFML/Graphics.hpp>
 	<vector>
 
-1794962476 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
+1794966710 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
 	"MenuPrincipal.h"
 	<ranking.h>
 
@@ -599,7 +600,7 @@
 	<cstring>
 	<iostream>
 
-1794889800 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\ranking.cpp
+1794966078 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\ranking.cpp
 	"ranking.h"
 	<fstream>
 	<algorithm>

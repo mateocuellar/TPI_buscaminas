@@ -182,8 +182,8 @@ bool registroUsuario::mostrarLogin(RenderWindow& window) {
     return false;
 }
 
-void registroUsuario::mostrarRegistro(RenderWindow& window) {
-    if (!cargarRecursos()) return;
+bool registroUsuario::mostrarRegistro(RenderWindow& window) {
+    if (!cargarRecursos()) return false;
     inicializarComponentes(window, "REGISTRAR USUARIO NUEVO");
 
     stringUsuario = "";
@@ -204,7 +204,7 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
             if (event->is<Event::Closed>()) window.close();
 
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
-                if (keyPressed->code == Keyboard::Key::Escape) return;
+                if (keyPressed->code == Keyboard::Key::Escape) return false;
                 if (keyPressed->code == Keyboard::Key::Tab) {
                     campoSeleccionado = (campoSeleccionado + 1) % 3;
                 }
@@ -216,7 +216,7 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
                             textoAlerta.setString(U"Error: Las contraseñas no coinciden.");
                         } else if (guardarUsuarioNuevo(stringUsuario, stringPassword)) {
                             cout << "Usuario registrado con exito!" << endl;
-                            return;
+                            return true;
                         } else {
                             textoAlerta.setString(U"Error: El usuario ya existe o campos vacíos.");
                         }
@@ -243,13 +243,13 @@ void registroUsuario::mostrarRegistro(RenderWindow& window) {
                     if (cajaTextoUsuario->getGlobalBounds().contains(mousePos)) campoSeleccionado = 0;
                     if (cajaTextoPassword->getGlobalBounds().contains(mousePos)) campoSeleccionado = 1;
                     if (cajaTextoConfirmPassword->getGlobalBounds().contains(mousePos)) campoSeleccionado = 2;
-                    if (btnVolver->getGlobalBounds().contains(mousePos)) return;
+                    if (btnVolver->getGlobalBounds().contains(mousePos)) return false;
                     if (btnAceptar->getGlobalBounds().contains(mousePos)) {
                         if (stringPassword != stringConfirmPassword) {
                             textoAlerta.setString(U"Error: Las contraseñas no coinciden.");
                         } else if (guardarUsuarioNuevo(stringUsuario, stringPassword)) {
                             cout << "Usuario registrado con exito!" << endl;
-                            return;
+                            return true;
                         } else {
                             textoAlerta.setString(U"Error: El usuario ya existe o campos vacíos.");
                         }

@@ -51,7 +51,8 @@ public:
 
     std::string getUsuarioActual() const { return stringUsuario; }
     bool mostrarLogin(sf::RenderWindow& window);
-    void mostrarRegistro(sf::RenderWindow& window);
+    bool mostrarRegistro(sf::RenderWindow& window);
+
 };
 
 #endif

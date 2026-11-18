@@ -125,12 +125,8 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnRegister->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + espaciado));
     btnRegister->setFillColor(colorBtn);
 
-    btnPlay.emplace(Vector2f(anchoBoton, altoBoton));
-    btnPlay->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 2)));
-    btnPlay->setFillColor(colorBtn);
-
     btnRanking.emplace(Vector2f(anchoBoton, altoBoton));
-    btnRanking->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 3)));
+    btnRanking->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 2)));
     btnRanking->setFillColor(colorBtn);
 
     btnSalir.emplace(Vector2f(anchoBoton/2-30, altoBoton*0.8));
@@ -149,13 +145,6 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     textoRegister->setPosition(Vector2f(
         (tamVentana.x - boundsRegister.size.x) / 2.f,
         btnRegister->getPosition().y + (altoBoton - boundsRegister.size.y) / 2.f - boundsRegister.position.y
-    ));
-
-    textoNuevaPartida.emplace(font, "Iniciar Partida", 28);
-    FloatRect boundsPlay = textoNuevaPartida->getGlobalBounds();
-    textoNuevaPartida->setPosition(Vector2f(
-        (tamVentana.x - boundsPlay.size.x) / 2.f,
-        btnPlay->getPosition().y + (altoBoton - boundsPlay.size.y) / 2.f - boundsPlay.position.y
     ));
 
     textoRanking.emplace(font, "Ranking", 28);
@@ -192,7 +181,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
 
     botones.push_back(&*btnLogin);
     botones.push_back(&*btnRegister);
-    botones.push_back(&*btnPlay);
     botones.push_back(&*btnRanking);
 
     while (window.isOpen()) {
@@ -213,28 +201,26 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-                    if (btnLogin->getGlobalBounds().contains(mousePos)) {
-                        cout << "Abriendo Login..." << endl;
-                        registroUsuario ui;
-                        if (ui.mostrarLogin(window)) {
-                            usuarioActual = ui.getUsuarioActual();
-                            cout << "Login exitoso (" << usuarioActual << "). Iniciando partida..." << endl;
-                            Partida partidaActual;
-                            partidaActual.ejecutar(window, usuarioActual);
-                        }
-                    }
+            if (btnLogin->getGlobalBounds().contains(mousePos)) {
+                registroUsuario ui;
+                if (ui.mostrarLogin(window)) {
+                    usuarioActual = ui.getUsuarioActual();
+                    Partida partida;
+                    partida.ejecutar(window, usuarioActual);
+                }
+            }
 
-                    if (btnRegister->getGlobalBounds().contains(mousePos)) {
-                        cout << "Abriendo Registro..." << endl;
-                        registroUsuario ui;
-                        ui.mostrarRegistro(window);
+            if (btnRegister->getGlobalBounds().contains(mousePos)) {
+                registroUsuario ui;
+                if (ui.mostrarRegistro(window)) {
+                    if (ui.mostrarLogin(window)) {
+                        usuarioActual = ui.getUsuarioActual();
+                        Partida partida;
+                        partida.ejecutar(window, usuarioActual);
                     }
+                }
+            }
 
-                    if (btnPlay->getGlobalBounds().contains(mousePos)) {
-                        cout << "Iniciando partida como " << usuarioActual << "..." << endl;
-                        Partida partidaActual;
-                        partidaActual.ejecutar(window, usuarioActual);
-                    }
 
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo pantalla de Ranking..." << endl;
@@ -271,7 +257,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         window.draw(*brillo, BlendAdd);
         window.draw(*btnLogin);
         window.draw(*btnRegister);
-        window.draw(*btnPlay);
         window.draw(*btnRanking);
         window.draw(*btnSalir);
 
@@ -279,7 +264,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         dibujarConSombra(window, *titulo2, 5.f);
         dibujarConSombra(window, *textoLogin, 3.f);
         dibujarConSombra(window, *textoRegister, 3.f);
-        dibujarConSombra(window, *textoNuevaPartida, 3.f);
         dibujarConSombra(window, *textoRanking, 3.f);
         dibujarConSombra(window, *textoTpi, 3.f);
 
