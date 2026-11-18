@@ -1,74 +1,110 @@
 #include "seleccionPersonaje.h"
 #include "menuPrincipal.h"
-#include "partida.h"
+#include "Juego.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 
 using namespace std;
 using namespace sf;
 
-Personaje::Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector <string> rutaImagenes, const vector<Color>& colores) {
+Character::Character(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector<string> rutaImagenes, const vector<Color>& colores) {
     for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
         vecTextos[i] = datos[i];
     }
-    for (int i = 0; i < CANT_COLORES&& i < (int)colores.size(); i++) {
-        vecColores[i] = colores[i];
-    }
-    this->vida = vida;
+    this->nombre = vecTextos[NOMBRE];
+    this->vidas = vida;
     this->armadura = armadura;
     this->maxUsoHabilidad = maxUsoHabilidad;
 
-    for (int i = 0;i < CANT_TEXTURAS; i++){
+    for (int i = 0; i < CANT_COLORES && i < (int)colores.size(); i++) {
+        vecColores[i] = colores[i];
+    }
+    for (int i = 0; i < CANT_TEXTURAS; i++) {
         this->rutaImagenes[i] = rutaImagenes[i];
-
     }
 }
 
-Personaje::~Personaje() {
+bool Character::cargarTexturasPersonajes() {
+    for (int i = 0; i < CANT_TEXTURAS; i++) {
+        if (!vecTexturas[i].loadFromFile(rutaImagenes[i])) return false;
+    }
+    return true;
 }
-string Personaje::getTexto(TextoPersonaje tipo) const {
+
+void Desactivador::procesarImpactoMina(int tipoMina) {
+    if (tipoMina == FUEGO) {
+        setArmadura(0);
+        setVida(0);
+    } else {
+        recibirDanio();
+    }
+}
+
+void Estabilizador::procesarImpactoMina(int tipoMina) {
+    if (escudoHermetico && (tipoMina == COMUN || tipoMina == FUEGO)) {
+        escudoHermetico = true;
+        return;
+    }
+    recibirDanio();
+}
+
+void Cartografa::procesarImpactoMina(int tipoMina) {
+    if (tipoMina == COMUN) {
+        recibirDanio();
+        recibirDanio();
+    } else {
+        recibirDanio();
+    }
+}
+
+bool Cartografa::escanearRuta(const Map& mapa, int col, int fila) const {
+    for (int dc = -1; dc <= 1; dc++) {
+        for (int df = -1; df <= 1; df++) {
+            int c = col + dc;
+            int f = fila + df;
+            if (c >= 0 && c < mapa.columnas && f >= 0 && f < mapa.filas) {
+                int tm = mapa.tablero[c][f].tipoMina;
+                if (tm == FUEGO || tm == HIELO || tm == RADIACION) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+Character::~Character() {
+}
+
+string Character::getTexto(TextoPersonaje tipo) const {
     return vecTextos[tipo];
 }
-int Personaje::getVida() const{
-    return vida;
-}
-int Personaje::getArmadura() const{
-    return armadura;
-}
-void Personaje::setArmadura(int arm){
-    armadura = arm;
-}
 
 
-void Personaje::setVida(int v){
-    vida = v;
-}
-bool Personaje::usarHabilidad(){
+bool Character::usarHabilidad(){
     if(contadorHabilidad >= maxUsoHabilidad){
         return false;
     }
     contadorHabilidad ++;
     return true;
 }
-Color Personaje::getColor(ColoresPersonaje color) const {
+Color Character::getColor(ColoresPersonaje color) const {
     return vecColores[color];
 }
-const Texture& Personaje::getTextura(TexturasPersonaje tipo) const {
+const Texture& Character::getTextura(TexturasPersonaje tipo) const {
     return vecTexturas[tipo];
 }
 
-int Personaje::getContadorHabilidad() const {
-    return contadorHabilidad;
-}
-void Personaje::recibirDanio(){
-    if(Personaje::getArmadura()>0){
-        Personaje::setArmadura(Personaje::getArmadura() - 1);
+void Character::recibirDanio(){
+    if(Character::getArmadura()>0){
+        Character::setArmadura(Character::getArmadura() - 1);
     } else {
-        Personaje::setVida(Personaje::getVida() - 1);
+        Character::setVida(Character::getVida() - 1);
     }
 }
 
-CasperNull::CasperNull() : Personaje(
+Desactivador::Desactivador() : Character(
     {"Casper Null",
      "BUSCAR Y MARCAR",
      "DESARMADOR",
@@ -87,15 +123,15 @@ CasperNull::CasperNull() : Personaje(
     {Color(225, 85, 40), Color(220, 175, 60)}) {
 }
 
-void CasperNull::habilidad() {
+void Desactivador::habilidad() {
     if (!usarHabilidad()) return;
     cout << "CASPER NULL: Filtrando informacion falsa..." << endl;
 }
 
-CasperNull::~CasperNull() {
+Desactivador::~Desactivador() {
 }
 
-DunbarYunque::DunbarYunque() : Personaje(
+Estabilizador::Estabilizador() :Character(
     {"Dunbar Yunque",
     "MITIGAR",
     "ESCUDO TERMICO",
@@ -115,14 +151,14 @@ DunbarYunque::DunbarYunque() : Personaje(
     {Color(215, 130, 45), Color(110, 195, 235)}) {
 }
 
-void DunbarYunque::habilidad() {
+void Estabilizador::habilidad() {
     if (!usarHabilidad()) return;
     setArmadura(getArmadura() + 1);
 }
 
-DunbarYunque::~DunbarYunque() {}
+Estabilizador::~Estabilizador() {}
 
-TessKnot::TessKnot() : Personaje(
+Cartografa::Cartografa() : Character(
     {"Tess Knot",
      "DESTREZA ANALITICA",
      "ESCANEO",
@@ -141,22 +177,22 @@ TessKnot::TessKnot() : Personaje(
     {Color(50, 185, 175), Color(80, 200, 110)}) {
 }
 
-void TessKnot::habilidad() {
+void Cartografa::habilidad() {
     if (!usarHabilidad()) return;
 
 }
 
-TessKnot::~TessKnot() {
+Cartografa::~Cartografa() {
     maxUsoHabilidad = 1;
 }
 
-void borrarPersonajes(vector<Personaje*>& personajes) {
+void borrarPersonajes(vector<Character*>& personajes) {
     for (size_t i = 0; i < personajes.size(); i++) {
         delete personajes[i];
     }
 }
 
-Personaje* seleccionPersonaje(RenderWindow& window) {
+Character* seleccionPersonaje(RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
 
     Texture texturaFondo;
@@ -177,10 +213,10 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
         static_cast<float>(tamVentana.y) / static_cast<float>(tamFondo.y)
     ));
     fondo.setPosition(Vector2f(0,0));
-    vector<Personaje*> personajes = {
-        new CasperNull(),
-        new DunbarYunque(),
-        new TessKnot()
+    vector<Character*> personajes = {
+        new Desactivador(),
+        new Estabilizador(),
+        new Cartografa()
     };
 
     for (size_t i = 0; i < personajes.size(); i++) {
@@ -255,7 +291,7 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
                     for (size_t i = 0; i < botones.size(); i++) {
                         if (botones[i].getGlobalBounds().contains(mousePos)) {
-                            for (Personaje* p : personajes)
+                            for (Character* p : personajes)
                                 if (p != personajes[i]) delete p;
                             cout << "se selecciono a " << personajes[i]->getTexto(NOMBRE) << endl;
                             return personajes[i];
@@ -297,13 +333,13 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     return nullptr;
 }
 
-void Personaje::recargarHabilidad() {
+void Character::recargarHabilidad() {
     if (contadorHabilidad > 0) {
         contadorHabilidad--;
     }
 }
 
-int Personaje::getUsosRestantes() const {
+int Character::getUsosRestantes() const {
     return maxUsoHabilidad - contadorHabilidad;
 }
 

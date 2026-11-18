@@ -243,9 +243,10 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                         }
                     } else {
                         if (btnIniciarPartida->getGlobalBounds().contains(mousePos)) {
-                            Partida partida;
-                            partida.ejecutar(window, usuarioActual);
+                            Juego juego;
+                            juego.iniciarPartida(window, usuarioActual);
                         }
+
                         if (btnCerrarSesion->getGlobalBounds().contains(mousePos)) {
                             sesionIniciada = false;
                             usuarioActual = "Invitado";

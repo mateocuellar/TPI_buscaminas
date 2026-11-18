@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1794963834 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+1795020992 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menuPrincipal.h"
@@ -542,11 +542,11 @@
 	<string_view>
 	<cstdint>
 
-1794964324 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
+1795022061 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<optional>
-	"Partida.h"
+	"Juego.h"
 	"registroUsuario.h"
 
 1794962050 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\partida.h
@@ -574,19 +574,20 @@
 	"seleccionPersonaje.h"
 	"menuPrincipal.h"
 
-1794962050 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
+1795023467 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<vector>
+	"Map.h"
 
-1794967936 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
+1795029308 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
 	"seleccionPersonaje.h"
 	"menuPrincipal.h"
-	"partida.h"
+	"Juego.h"
 	<SFML/Graphics.hpp>
 	<vector>
 
-1794966710 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
+1795039159 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
 	"MenuPrincipal.h"
 	<ranking.h>
 
@@ -1143,4 +1144,41 @@
 	<SFML/System/Export.hpp>
 	<string_view>
 	<cstdint>
+
+1795039445 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
+	<SFML/Graphics.hpp>
+	<iostream>
+	<random>
+	<string>
+	<vector>
+	<optional>
+	<cmath>
+	"Map.h"
+	"seleccionPersonaje.h"
+	"GestorArchivos.h"
+
+1795039590 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\gestorarchivos.cpp
+	"GestorArchivos.h"
+	<fstream>
+	<cstring>
+
+1795039590 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\gestorarchivos.h
+	<string>
+	"registroUsuario.h"
+	"ranking.h"
+
+1795030423 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\map.cpp
+	"Map.h"
+
+1795030519 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\map.h
+	<vector>
+	<random>
+	<algorithm>
+	<numeric>
+	<cmath>
+
+1795039199 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
+	"Juego.h"
+	"menuPrincipal.h"
+	"GestorArchivos.h"
 

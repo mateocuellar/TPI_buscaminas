@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <optional>
-#include "Partida.h"
+#include "Juego.h"
 #include "registroUsuario.h"
 
 void dibujarConSombra(RenderWindow& window, Text& texto, float desplazamiento);

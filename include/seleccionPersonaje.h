@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include "Map.h"
 
 using namespace std;
 using namespace sf;
@@ -12,70 +13,73 @@ enum TextoPersonaje { NOMBRE, HABILIDAD, PASIVA, DESCRIPCION, CANT_TEXTOS };
 enum TexturasPersonaje { FOTO, IDLE, ANIMDANIO, ANIMHABILIDAD, HUD, CANT_TEXTURAS };
 enum ColoresPersonaje { colorHabilidad, colorPasiva, CANT_COLORES };
 
-class Personaje{
+class Character {
 protected:
+    string nombre;
+    int vidas;
+
     string vecTextos[CANT_TEXTOS];
-    int vida;
     int armadura;
     int maxUsoHabilidad;
     int contadorHabilidad = 0;
 
     string rutaImagenes[CANT_TEXTURAS];
-
     Texture vecTexturas[CANT_TEXTURAS];
-
     Color vecColores[CANT_COLORES];
+
 public:
-    Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector <string>rutaImagenes, const vector<Color>& colores);
+    Character(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector<string> rutaImagenes, const vector<Color>& colores);
 
     string getTexto(TextoPersonaje tipo) const;
-    int getVida() const;
-    int getArmadura() const;
+    int getVida() const { return vidas; }
+    int getArmadura() const { return armadura; }
     const Texture& getTextura(TexturasPersonaje tipo) const;
 
-
-    void setArmadura(int arm);
-    void setVida(int v);
-    void setTextura(Texture nuevaTextura);
-    int getContadorHabilidad() const;
+    void setArmadura(int arm) { armadura = arm; }
+    void setVida(int v) { vidas = v; }
+    int getContadorHabilidad() const { return contadorHabilidad; }
     bool usarHabilidad();
-    virtual void habilidad() = 0;
     void recargarHabilidad();
     int getUsosRestantes() const;
 
-    void recibirDanio();
+    virtual void procesarImpactoMina(int tipoMina) = 0;
+    virtual void habilidad() = 0;
 
+    void recibirDanio();
     bool cargarTexturasPersonajes();
     Color getColor(ColoresPersonaje color) const;
-    virtual ~Personaje();
+    virtual ~Character();
 };
 
-
-class CasperNull:public Personaje{
-protected:
+class Desactivador : public Character {
 public:
-    CasperNull();
+    Desactivador();
+    void procesarImpactoMina(int tipoMina) override;
     void habilidad() override;
-    ~CasperNull();
+    ~Desactivador();
 };
 
-class DunbarYunque:public Personaje{
-protected:
+class Estabilizador : public Character {
 public:
-    DunbarYunque();
+    bool escudoHermetico;
+    Estabilizador();
+    void procesarImpactoMina(int tipoMina) override;
     void habilidad() override;
-    ~DunbarYunque();
+    ~Estabilizador();
 };
 
-class TessKnot:public Personaje{
-protected:
+class Cartografa : public Character {
 public:
-    TessKnot();
+    Cartografa();
+    void procesarImpactoMina(int tipoMina) override;
+    bool escanearRuta(const Map& mapa, int col, int fila) const;
     void habilidad() override;
-    ~TessKnot();
-
+    ~Cartografa();
 };
 
-Personaje* seleccionPersonaje(RenderWindow& window);
+
+
+Character* seleccionPersonaje(RenderWindow& window);
 
 #endif
+
