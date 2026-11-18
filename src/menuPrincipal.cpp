@@ -125,6 +125,14 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnRegister->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + espaciado));
     btnRegister->setFillColor(colorBtn);
 
+    btnIniciarPartida.emplace(Vector2f(anchoBoton, altoBoton));
+    btnIniciarPartida->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY));
+    btnIniciarPartida->setFillColor(colorBtn);
+
+    btnCerrarSesion.emplace(Vector2f(anchoBoton, altoBoton));
+    btnCerrarSesion->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + espaciado));
+    btnCerrarSesion->setFillColor(colorBtn);
+
     btnRanking.emplace(Vector2f(anchoBoton, altoBoton));
     btnRanking->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 2)));
     btnRanking->setFillColor(colorBtn);
@@ -140,11 +148,25 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         btnLogin->getPosition().y + (altoBoton - boundsLogin.size.y) / 2.f - boundsLogin.position.y
     ));
 
+    textoIniciarPartida.emplace(font, "Iniciar Partida", 28);
+    FloatRect boundsIniciar = textoIniciarPartida->getGlobalBounds();
+    textoIniciarPartida->setPosition(Vector2f(
+        (tamVentana.x - boundsIniciar.size.x) / 2.f,
+        btnLogin->getPosition().y + (altoBoton - boundsIniciar.size.y) / 2.f - boundsIniciar.position.y
+    ));
+
     textoRegister.emplace(font, "Registrarse", 28);
     FloatRect boundsRegister = textoRegister->getGlobalBounds();
     textoRegister->setPosition(Vector2f(
         (tamVentana.x - boundsRegister.size.x) / 2.f,
         btnRegister->getPosition().y + (altoBoton - boundsRegister.size.y) / 2.f - boundsRegister.position.y
+    ));
+
+    textoCerrarSesion.emplace(font, "Cerrar sesión", 28);
+    FloatRect boundsCerrar = textoCerrarSesion->getGlobalBounds();
+    textoCerrarSesion->setPosition(Vector2f(
+        (tamVentana.x - boundsCerrar.size.x) / 2.f,
+        btnRegister->getPosition().y + (altoBoton - boundsCerrar.size.y) / 2.f - boundsCerrar.position.y
     ));
 
     textoRanking.emplace(font, "Ranking", 28);
@@ -171,7 +193,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     if (!cargarRecursos()) return;
     inicializarComponentes(window);
     crearParticulas(window);
-    string usuarioActual = "Invitado";
 
     Color colorBtn(255, 107, 53);
     Color colorHover(210, 75, 30);
@@ -182,6 +203,8 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     botones.push_back(&*btnLogin);
     botones.push_back(&*btnRegister);
     botones.push_back(&*btnRanking);
+    botones.push_back(&*btnCerrarSesion);
+    botones.push_back(&*btnIniciarPartida);
 
     while (window.isOpen()) {
         float dt = relojParticulas.restart().asSeconds();
@@ -201,27 +224,33 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-            if (btnLogin->getGlobalBounds().contains(mousePos)) {
-                registroUsuario ui;
-                if (ui.mostrarLogin(window)) {
-                    usuarioActual = ui.getUsuarioActual();
-                    Partida partida;
-                    partida.ejecutar(window, usuarioActual);
-                }
-            }
-
-            if (btnRegister->getGlobalBounds().contains(mousePos)) {
-                registroUsuario ui;
-                if (ui.mostrarRegistro(window)) {
-                    if (ui.mostrarLogin(window)) {
-                        usuarioActual = ui.getUsuarioActual();
-                        Partida partida;
-                        partida.ejecutar(window, usuarioActual);
+                    if (!sesionIniciada) {
+                        if (btnLogin->getGlobalBounds().contains(mousePos)) {
+                            registroUsuario ui;
+                            if (ui.mostrarLogin(window)) {
+                                usuarioActual = ui.getUsuarioActual();
+                                sesionIniciada = true;
+                            }
+                        }
+                        if (btnRegister->getGlobalBounds().contains(mousePos)) {
+                            registroUsuario ui;
+                            if (ui.mostrarRegistro(window)) {
+                                if (ui.mostrarLogin(window)) {
+                                    usuarioActual = ui.getUsuarioActual();
+                                    sesionIniciada = true;
+                                }
+                            }
+                        }
+                    } else {
+                        if (btnIniciarPartida->getGlobalBounds().contains(mousePos)) {
+                            Partida partida;
+                            partida.ejecutar(window, usuarioActual);
+                        }
+                        if (btnCerrarSesion->getGlobalBounds().contains(mousePos)) {
+                            sesionIniciada = false;
+                            usuarioActual = "Invitado";
+                        }
                     }
-                }
-            }
-
-
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo pantalla de Ranking..." << endl;
                         ranking pantallaRanking;
@@ -255,17 +284,26 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         }
 
         window.draw(*brillo, BlendAdd);
-        window.draw(*btnLogin);
-        window.draw(*btnRegister);
-        window.draw(*btnRanking);
-        window.draw(*btnSalir);
-
         dibujarConSombra(window, *titulo, 5.f);
         dibujarConSombra(window, *titulo2, 5.f);
-        dibujarConSombra(window, *textoLogin, 3.f);
-        dibujarConSombra(window, *textoRegister, 3.f);
-        dibujarConSombra(window, *textoRanking, 3.f);
         dibujarConSombra(window, *textoTpi, 3.f);
+
+        if(!sesionIniciada){
+            window.draw(*btnLogin);
+            dibujarConSombra(window, *textoLogin, 3.f);
+            window.draw(*btnRegister);
+            dibujarConSombra(window, *textoRegister, 3.f);
+        } else {
+            window.draw(*btnIniciarPartida);
+            dibujarConSombra(window, *textoIniciarPartida, 3.f);
+            window.draw(*btnCerrarSesion);
+            dibujarConSombra(window, *textoCerrarSesion, 3.f);
+        }
+        window.draw(*btnRanking);
+        dibujarConSombra(window, *textoRanking, 3.f);
+
+        window.draw(*btnSalir);
+
 
         window.draw(*textoSalir);
 

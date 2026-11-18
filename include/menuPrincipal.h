@@ -26,15 +26,17 @@ private:
 
     std::optional<sf::RectangleShape> btnLogin;
     std::optional<sf::RectangleShape> btnRegister;
+    std::optional<sf::RectangleShape> btnIniciarPartida;
+    std::optional<sf::RectangleShape> btnCerrarSesion;
     std::optional<sf::RectangleShape> btnRanking;
     std::optional<sf::RectangleShape> btnSalir;
 
     std::optional<sf::Text> titulo;
-    std::optional<sf::Text> sombraTitulo;
     std::optional<sf::Text> titulo2;
-    std::optional<sf::Text> sombraTitulo2;
     std::optional<sf::Text> textoLogin;
     std::optional<sf::Text> textoRegister;
+    std::optional<sf::Text> textoIniciarPartida;
+    std::optional<sf::Text> textoCerrarSesion;
     std::optional<sf::Text> textoRanking;
     std::optional<sf::Text> textoSalir;
     std::optional<sf::Text> textoTpi;
@@ -48,8 +50,10 @@ private:
     sf::Texture texturaBrillo;
     std::vector<Particula> particulas;
 
-    sf::Clock relojParticulas;
+    string usuarioActual = "Invitado";
+    bool sesionIniciada = false;
 
+    sf::Clock relojParticulas;
     void crearParticulas(sf::RenderWindow& window);
     void actualizarParticulas(float dt, sf::RenderWindow& window);
 

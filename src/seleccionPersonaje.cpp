@@ -70,7 +70,7 @@ void Personaje::recibirDanio(){
 
 CasperNull::CasperNull() : Personaje(
     {"Casper Null",
-     "SEEK AND DESTROY",
+     "BUSCAR Y MARCAR",
      "DESARMADOR",
      "Filtra la informacion falsa de las Minas\n"
      "de Radiacion y muestra el numero real. \n"
