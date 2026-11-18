@@ -51,6 +51,7 @@ private:
     optional<Sprite> vidaHud;
     optional<Sprite> armaduraHud;
     optional<Sprite> spritePersonaje;
+    optional<Sprite> spritePersonajeHud;
     optional<Text> textoTimer;
     optional<Text> textoCantidadBombas;
     optional<Text> textoVidaActual;
