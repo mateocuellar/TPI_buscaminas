@@ -196,10 +196,10 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamFondo = texturaFondo.getSize();
     fondo->setScale(Vector2f(static_cast<float>(tamVentana.x) / tamFondo.x, static_cast<float>(tamVentana.y) / tamFondo.y));
     textoTimer.emplace(font, "TIEMPO: 0:0", 30);
-    textoTimer->setPosition(Vector2f(150, tamVentana.y - 100));
+    textoTimer->setPosition(Vector2f(265.f, tamVentana.y - 105.f));
     textoTimer->setFillColor(Color::White);
     textoCantidadBombas.emplace(font, "", 30);
-    textoCantidadBombas->setPosition(Vector2f(150, tamVentana.y - 60));
+    textoCantidadBombas->setPosition(Vector2f(265.f, tamVentana.y - 60.f));
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
     textoGameOver.emplace(font, "GAME OVER", 80);
@@ -256,13 +256,14 @@ bool Partida::inicializarTablero(RenderWindow& window) {
 
     spritePersonajeHud.emplace(personaje->getTextura(HUD));
     Vector2u tamPjHud = personaje->getTextura(HUD).getSize();
-    float ladoRetrato = 180.f;
-    spritePersonajeHud->setScale({ladoRetrato / tamPjHud.x, ladoRetrato / tamPjHud.y});
-    spritePersonajeHud->setPosition({55.f, 865.f});
+    float anchoMarco = 94.f;
+    float altoMarco = 120.f;
+    spritePersonajeHud->setScale({anchoMarco / tamPjHud.x, altoMarco / tamPjHud.y});
+    spritePersonajeHud->setPosition({153.f, 831.f});
 
     bombaHud.emplace(texturaBomba);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
-    bombaHud->setPosition(Vector2f(550, tamVentana.y - 70));
+    bombaHud->setPosition(Vector2f(665.f, tamVentana.y - 70.f));
     vidaHud.emplace(texturaVida);
     vidaHud->setPosition(Vector2f(270, tamVentana.y - 170));
     vidaHud->setScale({escalaX * 0.3f, escalaY * 0.3f});
@@ -275,11 +276,11 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoArmaduraActual->setPosition(Vector2f(400 + 60, tamVentana.y - 170));
     textoPersonaje.emplace(font, personaje->getTexto(NOMBRE), 36);
     textoPersonaje->setPosition(Vector2f(270, tamVentana.y - 230));
-    textoHablidad.emplace(font, personaje->getTexto(HABILIDAD), 36);
-    textoHablidad->setPosition(Vector2f(750, tamVentana.y - 190));
+    textoHablidad.emplace(font, personaje->getTexto(HABILIDAD), 28);
+    textoHablidad->setPosition(Vector2f(750, tamVentana.y - 185));
     textoHablidad->setFillColor(personaje->getColor(colorHabilidad));
-    textoPasiva.emplace(font, personaje->getTexto(PASIVA), 36);
-    textoPasiva->setPosition(Vector2f(750, tamVentana.y - 150));
+    textoPasiva.emplace(font, personaje->getTexto(PASIVA), 28);
+    textoPasiva->setPosition(Vector2f(750, tamVentana.y - 140));
     textoPasiva->setFillColor(personaje->getColor(colorPasiva));
     textoStatus.emplace(font, "ESTADO", 36);
     textoStatus->setPosition(Vector2f(800, tamVentana.y - 240));
@@ -361,7 +362,7 @@ void Partida::ejecutar(RenderWindow& window, const string& usuario) {
                                 }
                             }
             if (peligroCadena) {
-                textoPasiva->setString("ALERTA: CADENA ELEMENTAL");
+                textoPasiva->setString("ALERTA: CADENA CERCA");
                 textoPasiva->setFillColor(Color(255, 100, 100));
             } else {
                 textoPasiva->setString(personaje->getTexto(PASIVA));

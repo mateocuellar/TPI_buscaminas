@@ -98,7 +98,7 @@ CasperNull::~CasperNull() {
 DunbarYunque::DunbarYunque() : Personaje(
     {"Dunbar Yunque",
     "MITIGAR",
-    "ESCUDO TÉRMICO",
+    "ESCUDO TERMICO",
     "El escudo absorbe por completo el impacto \n"
     "de minas comunes y de fuego, \n"
     "y es inmune al hielo. \n"
@@ -124,7 +124,7 @@ DunbarYunque::~DunbarYunque() {}
 
 TessKnot::TessKnot() : Personaje(
     {"Tess Knot",
-     "DESTREZA ANALÍTICA",
+     "DESTREZA ANALITICA",
      "ESCANEO",
      "Su escaneo avisa si una ruta puede causar \n"
      "reaccion en cadena. \n"

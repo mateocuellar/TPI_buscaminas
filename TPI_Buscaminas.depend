@@ -568,7 +568,7 @@
 	<vector>
 	<fstream>
 
-1794963389 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
+1794968312 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
 	"Partida.h"
 	"ranking.h"
 	"seleccionPersonaje.h"
@@ -579,7 +579,7 @@
 	<iostream>
 	<vector>
 
-1794962050 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
+1794967936 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
 	"seleccionPersonaje.h"
 	"menuPrincipal.h"
 	"partida.h"
@@ -595,7 +595,7 @@
 	<vector>
 	<string>
 
-1794883105 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\registrousuario.cpp
+1794966860 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\registrousuario.cpp
 	"registroUsuario.h"
 	<cstring>
 	<iostream>
