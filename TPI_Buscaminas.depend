@@ -548,7 +548,7 @@
 	"Partida.h"
 	"registroUsuario.h"
 
-1794942931 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\partida.h
+1794962050 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\partida.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -567,23 +567,25 @@
 	<vector>
 	<fstream>
 
-1794950752 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
+1794962853 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
 	"Partida.h"
 	"ranking.h"
 	"seleccionPersonaje.h"
+	"menuPrincipal.h"
 
-1794943475 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
+1794962050 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<vector>
 
-1794942947 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
+1794962050 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
 	"seleccionPersonaje.h"
+	"menuPrincipal.h"
 	"partida.h"
 	<SFML/Graphics.hpp>
 	<vector>
 
-1794942921 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
+1794962476 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
 	"MenuPrincipal.h"
 	<ranking.h>
 

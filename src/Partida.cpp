@@ -189,12 +189,12 @@ void Partida::destapar(int idx) {
 
 bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
-    spritePersonaje.emplace(personaje->getTexturaIdle());
+    spritePersonaje.emplace(personaje->getTextura(IDLE));
     spritePersonaje->setScale({1.5f, 1.5f});
     spritePersonaje->setOrigin({32.f, 60.f});
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
-    fondo->setScale(Vector2f(static_cast<float>(tamVentana.x) / tamFondo.x,static_cast<float>(tamVentana.y) / tamFondo.y));
+    fondo->setScale(Vector2f(static_cast<float>(tamVentana.x) / tamFondo.x, static_cast<float>(tamVentana.y) / tamFondo.y));
     textoTimer.emplace(font, "TIEMPO: 0:0", 30);
     textoTimer->setPosition(Vector2f(150, tamVentana.y - 100));
     textoTimer->setFillColor(Color::White);
@@ -205,12 +205,12 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     textoGameOver.emplace(font, "GAME OVER", 80);
     textoGameOver->setFillColor(Color::Red);
     FloatRect limites = textoGameOver->getGlobalBounds();
-    textoGameOver->setOrigin(Vector2f(limites.position.x + limites.size.x / 2.f,limites.position.y + limites.size.y / 2.f));
+    textoGameOver->setOrigin(Vector2f(limites.position.x + limites.size.x / 2.f, limites.position.y + limites.size.y / 2.f));
     textoGameOver->setPosition(Vector2f(tamVentana.x / 2.f, tamVentana.y / 2.f));
     textoVictoria.emplace(font, "VICTORIA!", 80);
     textoVictoria->setFillColor(Color::Green);
     FloatRect limitesVic = textoVictoria->getGlobalBounds();
-    textoVictoria->setOrigin(Vector2f(limitesVic.position.x + limitesVic.size.x / 2.f,limitesVic.position.y + limitesVic.size.y / 2.f));
+    textoVictoria->setOrigin(Vector2f(limitesVic.position.x + limitesVic.size.x / 2.f, limitesVic.position.y + limitesVic.size.y / 2.f));
     textoVictoria->setPosition(Vector2f(tamVentana.x / 2.f, tamVentana.y / 2.f));
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
@@ -253,6 +253,13 @@ bool Partida::inicializarTablero(RenderWindow& window) {
     Vector2u tamHud = texturaHud.getSize();
     hud->setScale({1920.f / tamHud.x, 250.f / tamHud.y});
     hud->setPosition({0, 830.f});
+
+    spritePersonajeHud.emplace(personaje->getTextura(HUD));
+    Vector2u tamPjHud = personaje->getTextura(HUD).getSize();
+    float ladoRetrato = 180.f;
+    spritePersonajeHud->setScale({ladoRetrato / tamPjHud.x, ladoRetrato / tamPjHud.y});
+    spritePersonajeHud->setPosition({55.f, 865.f});
+
     bombaHud.emplace(texturaBomba);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
     bombaHud->setPosition(Vector2f(550, tamVentana.y - 70));
@@ -564,17 +571,18 @@ void Partida::ejecutar(RenderWindow& window, const string& usuario) {
             spritePersonaje->setTexture(personaje->getTextura(ANIMDANIO));
             spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
             spritePersonaje->setOrigin({32.f, 60.f});
-        } else if (mostrandoHabilidad) {
+        }
+        else if (mostrandoHabilidad) {
             spritePersonaje->setTexture(personaje->getTextura(ANIMHABILIDAD));
             spritePersonaje->setTextureRect(IntRect({frame * 96, 0}, {96, 96}));
             spritePersonaje->setOrigin({48.f, 84.f});
-        } else {
+        }
+        else {
             frame = (int)(relojAnim.getElapsedTime().asSeconds() / 0.5f) % 2;
             spritePersonaje->setTexture(personaje->getTextura(IDLE));
             spritePersonaje->setTextureRect(IntRect({frame * 64, 0}, {64, 64}));
             spritePersonaje->setOrigin({32.f, 60.f});
         }
-
         if (personajeColocado) {
                 int idxPj = cursorCol * cantCuadradosY + cursorFila;
 Vector2f pos = botones[idxPj].getPosition();
