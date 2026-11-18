@@ -1,6 +1,5 @@
 #include "MenuPrincipal.h"
 #include <ranking.h>
-
 using namespace std;
 using namespace sf;
 
@@ -17,7 +16,6 @@ void dibujarConSombra(RenderWindow& window, Text& texto, float desplazamiento) {
 }
 
 menuPrincipal::menuPrincipal() {
-
 }
 
 bool menuPrincipal::cargarRecursos() {
@@ -46,8 +44,6 @@ bool menuPrincipal::cargarRecursos() {
 
 void menuPrincipal::crearParticulas(RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
-
-
     random_device rd;
     mt19937 gen(rd());
 
@@ -66,62 +62,32 @@ void menuPrincipal::crearParticulas(RenderWindow& window) {
 
     for (int i = 0; i < 25; i++) {
         Particula p(i % 2 == 0 ? texturaHoja : texturaPolvo);
-
         Vector2u tamTextura = texturaHoja.getSize();
-
-        p.sprite.setOrigin(Vector2f(
-            tamTextura.x / 2.f,
-            tamTextura.y / 2.f
-        ));
-
+        p.sprite.setOrigin(Vector2f(tamTextura.x / 2.f,tamTextura.y / 2.f));
         float escala = escalaHoja(gen);
-
         p.sprite.setScale(Vector2f(escala*3, escala*3));
-
-        p.sprite.setPosition(Vector2f(
-            posX(gen),
-            posY(gen)
-        ));
-
-        p.velocidad = Vector2f(
-            velX(gen),
-            velY(gen)
-        );
-
+        p.sprite.setPosition(Vector2f(posX(gen),posY(gen)));
+        p.velocidad = Vector2f(velX(gen),velY(gen));
         p.velRotacion = rotacion(gen);
-
         particulas.push_back(p);
     }
 
     brillo.emplace(texturaBrillo);
-
     Vector2u tamBrillo = texturaBrillo.getSize();
-
-    brillo->setOrigin(Vector2f(
-        tamBrillo.x / 2.f,
-        tamBrillo.y / 2.f
-    ));
-
+    brillo->setOrigin(Vector2f(tamBrillo.x / 2.f,tamBrillo.y / 2.f));
     brillo->setPosition(Vector2f(tamVentana.x - 200, 385));
     brillo->setScale(Vector2f(0.7f, 0.7f));
-
-
 }
 
 void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
-
     static random_device rd;
     static mt19937 gen(rd());
-
     uniform_real_distribution<float> nuevaX(0.f, static_cast<float>(tamVentana.x));
-
     for (size_t i = 0; i < particulas.size(); i++) {
         particulas[i].sprite.move(particulas[i].velocidad * dt);
         particulas[i].sprite.rotate(degrees(particulas[i].velRotacion * dt));
-
         Vector2f pos = particulas[i].sprite.getPosition();
-
         if (pos.x > tamVentana.x + 50.f) {
             particulas[i].sprite.setPosition(Vector2f(-50.f, pos.y));
         }
@@ -134,13 +100,10 @@ void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
 
 void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
-
     Color colorBtn(255, 107, 53);
-
     float anchoBoton = 340.f;
     float altoBoton = 65.f;
     float espaciado = altoBoton + 20.f;
-
     fondo.emplace(texturaFondo);
     Vector2u tamFondo = texturaFondo.getSize();
     fondo->setScale(Vector2f(
@@ -148,13 +111,10 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         static_cast<float>(tamVentana.y) / static_cast<float>(tamFondo.y)
     ));
     fondo->setPosition(Vector2f(0,0));
-
-     titulo.emplace(font, "MINESWEEPER:", 96);
+    titulo.emplace(font, "MINESWEEPER:", 96);
     titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, tamVentana.y * 0.10f));
-
     titulo2.emplace(font, "ELEMENTAL TACTICS", 60);
     titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 105.f));
-
     float inicioY = titulo2->getPosition().y + 150.f;
 
     btnLogin.emplace(Vector2f(anchoBoton, altoBoton));
@@ -222,13 +182,11 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     if (!cargarRecursos()) return;
     inicializarComponentes(window);
     crearParticulas(window);
-
     string usuarioActual = "Invitado";
 
     Color colorBtn(255, 107, 53);
     Color colorHover(210, 75, 30);
     Color colorBorde(255, 180, 100);
-
 
     vector<RectangleShape*> botones;
 
@@ -255,7 +213,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 if (mouseButton->button == Mouse::Button::Left) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
 
-                                       if (btnLogin->getGlobalBounds().contains(mousePos)) {
+                    if (btnLogin->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo Login..." << endl;
                         registroUsuario ui;
                         if (ui.mostrarLogin(window)) {
@@ -278,7 +236,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                         partidaActual.ejecutar(window, usuarioActual);
                     }
 
-
                     if (btnRanking->getGlobalBounds().contains(mousePos)) {
                         cout << "Abriendo pantalla de Ranking..." << endl;
                         ranking pantallaRanking;
@@ -291,7 +248,6 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                 }
             }
         }
-
         Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
 
         for (size_t i = 0; i < botones.size(); i++) {
@@ -306,14 +262,13 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
         }
 
         window.clear(Color(24, 33, 43));
-
         window.draw(*fondo);
 
         for (size_t i = 0; i < particulas.size(); i++) {
             window.draw(particulas[i].sprite);
         }
-        window.draw(*brillo, BlendAdd);
 
+        window.draw(*brillo, BlendAdd);
         window.draw(*btnLogin);
         window.draw(*btnRegister);
         window.draw(*btnPlay);

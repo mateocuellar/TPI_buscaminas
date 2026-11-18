@@ -8,11 +8,11 @@ int main() {
     setlocale(LC_ALL, "spanish");
 
 
-    RenderWindow window(VideoMode::getDesktopMode(), "Buscaminas", State::Fullscreen);
+    RenderWindow window(VideoMode::getDesktopMode(), "Buscaminas", Style::Default);
+
 
     View vistaJuego(FloatRect({0.f, 0.f}, {1920.f, 1080.f}));
     window.setView(vistaJuego);
-
 
     menuPrincipal menu;
     menu.ejecutar(window);

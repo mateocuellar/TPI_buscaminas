@@ -155,7 +155,9 @@ void TessKnot::habilidad() {
 
 }
 
-TessKnot::~TessKnot() {}
+TessKnot::~TessKnot() {
+    maxUsoHabilidad = 1;
+}
 
 void borrarPersonajes(vector<Personaje*>& personajes) {
     for (size_t i = 0; i < personajes.size(); i++) {
@@ -300,3 +302,14 @@ Personaje* seleccionPersonaje(RenderWindow& window) {
     borrarPersonajes(personajes);
     return nullptr;
 }
+
+void Personaje::recargarHabilidad() {
+    if (contadorHabilidad > 0) {
+        contadorHabilidad--;
+    }
+}
+
+int Personaje::getUsosRestantes() const {
+    return maxUsoHabilidad - contadorHabilidad;
+}
+

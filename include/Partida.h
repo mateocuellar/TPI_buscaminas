@@ -9,16 +9,20 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <cmath>
 
 class Personaje;
 using namespace std;
 using namespace sf;
+
+enum TipoMina { NINGUNA = 0, COMUN, FUEGO, HIELO, RADIACION };
 
 class Partida {
 private:
     mt19937 gen;
     Clock relojAnim;
     Clock relojDanio;
+    Clock relojDelta;
     bool mostrandoDanio = false;
     bool mostrandoHabilidad = false;
 
@@ -38,7 +42,7 @@ private:
     optional<Text> textoPasiva;
     optional<Text> textoStatus;
     optional<Text> textoCommands;
-    vector <Text> vecTextoCommands;
+    vector<Text> vecTextoCommands;
 
     optional<Sprite> fondo;
     optional<Sprite> hud;
@@ -52,12 +56,17 @@ private:
     optional<Text> textoVidaActual;
     optional<Text> textoArmaduraActual;
 
-
     vector<Sprite> botones;
     vector<Sprite> bombas;
     vector<bool> bloqueVisible;
     vector<bool> banderaActiva;
     vector<int> indicesBombas;
+
+    vector<int> tipoMina;
+    vector<int> turnosFuego;
+    vector<int> numerosMostrados;
+    vector<bool> tienePowerUp;
+    vector<bool> powerUpRecogido;
 
     bool perdio;
     bool gano;
@@ -65,6 +74,9 @@ private:
     std::string nombreJugador;
 
     float tiempoFinal;
+    float tiempoAcumulado;
+    float tiempoLimite;
+    float tiempoCongelado;
     int puntuacion;
 
     bool personajeColocado;
@@ -82,7 +94,11 @@ private:
     optional<Text> textoNumero;
 
     bool esBomba(int idx);
+    void generarMapaSeguro(int idxSeguro);
     void calcularNumeros();
+    void aplicarRadiacion();
+    void ejecutarHabilidadTactica();
+    void actualizarTurnosFuego();
 
     Clock reloj;
     int cantBombas;
@@ -92,6 +108,11 @@ private:
     bool inicializarTablero(RenderWindow& window);
     void destapar(int idx);
 
+    int banderasErroneasUsadas = 0;
+    int turnosRecargaTess = 0;
+    bool alertaReaccionCadena = false;
+
+
 public:
     Partida();
     void ejecutar(sf::RenderWindow& window, const std::string& usuario = "Invitado");
@@ -99,3 +120,4 @@ public:
 };
 
 #endif
+

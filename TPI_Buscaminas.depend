@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1794884471 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+1794944620 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
 	<SFML/Graphics.hpp>
 	"menuPrincipal.h"
 	<clocale>
@@ -548,7 +548,7 @@
 	"Partida.h"
 	"registroUsuario.h"
 
-1794889800 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\partida.h
+1794942931 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\partida.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -557,6 +557,7 @@
 	<string>
 	<vector>
 	<optional>
+	<cmath>
 
 1794889800 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\registrousuario.h
 	<SFML/Graphics.hpp>
@@ -566,23 +567,23 @@
 	<vector>
 	<fstream>
 
-1794889800 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
+1794950752 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\partida.cpp
 	"Partida.h"
 	"ranking.h"
 	"seleccionPersonaje.h"
 
-1794860399 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
+1794943475 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\seleccionpersonaje.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<vector>
 
-1794884471 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
+1794942947 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\seleccionpersonaje.cpp
 	"seleccionPersonaje.h"
 	"partida.h"
 	<SFML/Graphics.hpp>
 	<vector>
 
-1794889800 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
+1794942921 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
 	"MenuPrincipal.h"
 	<ranking.h>
 

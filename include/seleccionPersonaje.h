@@ -30,7 +30,7 @@ protected:
     Color vecColores[CANT_COLORES];
 public:
     Personaje(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector <string>rutaImagenes, const vector<Color>& colores);
-    //getters
+
     string getTexto(TextoPersonaje tipo) const;
     int getVida() const;
     int getArmadura() const;
@@ -39,13 +39,15 @@ public:
     const Texture& getTexturaDanio() const;
     const Texture& getTexturaHabilidad() const;
 
-    ///setters
+
     void setArmadura(int arm);
     void setVida(int v);
     void setTextura(Texture nuevaTextura);
     int getContadorHabilidad() const;
     bool usarHabilidad();
     virtual void habilidad() = 0;
+    void recargarHabilidad();
+    int getUsosRestantes() const;
 
     void recibirDanio();
 
@@ -77,6 +79,7 @@ public:
     TessKnot();
     void habilidad() override;
     ~TessKnot();
+
 };
 
 Personaje* seleccionPersonaje(RenderWindow& window);
