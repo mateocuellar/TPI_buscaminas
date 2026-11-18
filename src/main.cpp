@@ -8,12 +8,14 @@ using namespace sf;
 int main() {
 
     setlocale(LC_ALL, "spanish");
+    //VideoMode::getDesktopMode(): Detecta la resolucion de la PC con la que se ejecuta
     RenderWindow window(VideoMode::getDesktopMode(), "Buscaminas", State::Fullscreen);
     ShowWindow(static_cast<HWND>(window.getNativeHandle()), SW_MAXIMIZE);
     View vistaJuego(FloatRect({0.f, 0.f}, {1920.f, 1080.f}));
     window.setView(vistaJuego);
     menuPrincipal menu;
     menu.ejecutar(window);
+
 
     return 0;
 }
