@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1795020992 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+1795043049 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menuPrincipal.h"
@@ -1157,12 +1157,12 @@
 	"seleccionPersonaje.h"
 	"GestorArchivos.h"
 
-1795039590 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\gestorarchivos.cpp
+1795040053 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\gestorarchivos.cpp
 	"GestorArchivos.h"
 	<fstream>
 	<cstring>
 
-1795039590 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\gestorarchivos.h
+1795040100 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\gestorarchivos.h
 	<string>
 	"registroUsuario.h"
 	"ranking.h"
@@ -1177,8 +1177,7 @@
 	<numeric>
 	<cmath>
 
-1795039199 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
+1795041481 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
 	"Juego.h"
 	"menuPrincipal.h"
-	"GestorArchivos.h"
 
