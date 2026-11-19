@@ -76,11 +76,11 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     fondo->setScale(Vector2f(static_cast<float>(tamVentana.x) / tamFondo.x, static_cast<float>(tamVentana.y) / tamFondo.y));
 
     textoTimer.emplace(font, "TIEMPO: 0:0", 30);
-    textoTimer->setPosition(Vector2f(265.f, tamVentana.y - 105.f));
+    textoTimer->setPosition(Vector2f(750, tamVentana.y - 185));
     textoTimer->setFillColor(Color::White);
 
     textoCantidadBombas.emplace(font, "", 30);
-    textoCantidadBombas->setPosition(Vector2f(265.f, tamVentana.y - 60.f));
+    textoCantidadBombas->setPosition(Vector2f(750, tamVentana.y - 140));
 
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
@@ -169,11 +169,11 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     textoPersonaje->setPosition(Vector2f(270, tamVentana.y - 230));
 
     textoHablidad.emplace(font, personaje->getTexto(HABILIDAD), 28);
-    textoHablidad->setPosition(Vector2f(750, tamVentana.y - 185));
+    textoHablidad->setPosition(Vector2f(265.f, tamVentana.y - 105.f));
     textoHablidad->setFillColor(personaje->getColor(colorHabilidad));
 
     textoPasiva.emplace(font, personaje->getTexto(PASIVA), 28);
-    textoPasiva->setPosition(Vector2f(750, tamVentana.y - 140));
+    textoPasiva->setPosition(Vector2f(265.f, tamVentana.y - 60.f));
     textoPasiva->setFillColor(personaje->getColor(colorPasiva));
 
     textoStatus.emplace(font, "ESTADO", 36);
@@ -328,6 +328,7 @@ void Juego::gameLoop(RenderWindow& window) {
     bool esDesactivador  = (dynamic_cast<Desactivador*>(personaje) != nullptr);
     bool esEstabilizador = (dynamic_cast<Estabilizador*>(personaje) != nullptr);
     Cartografa* cartografaPtr = dynamic_cast<Cartografa*>(personaje);
+
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>())
@@ -445,7 +446,11 @@ void Juego::gameLoop(RenderWindow& window) {
             int restante = max(0, static_cast<int>(tiempoLimite - tiempoAcumulado));
             int minutos = restante / 60;
             int segundos = restante % 60;
-            textoTimer->setString("TIEMPO: " + to_string(minutos) + ":" + to_string(segundos));
+            if(segundos<10){
+                textoTimer->setString("TIEMPO: " + to_string(minutos) + ":0" + to_string(segundos));
+            } else {
+                textoTimer->setString("TIEMPO: " + to_string(minutos) + ":" + to_string(segundos));
+            }
             if (restante <= 0) {
                 perdio = true;
                 tiempoFinal = tiempoAcumulado;

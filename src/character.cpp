@@ -1,4 +1,4 @@
-#include "Character.h"
+#include "character.h"
 #include "menuPrincipal.h"
 #include "Juego.h"
 #include <SFML/Graphics.hpp>

@@ -300,11 +300,11 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
             window.draw(*btnCerrarSesion);
             dibujarConSombra(window, *textoCerrarSesion, 3.f);
         }
+
         window.draw(*btnRanking);
         dibujarConSombra(window, *textoRanking, 3.f);
 
         window.draw(*btnSalir);
-
 
         window.draw(*textoSalir);
 
