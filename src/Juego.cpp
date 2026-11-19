@@ -76,11 +76,11 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     fondo->setScale(Vector2f(static_cast<float>(tamVentana.x) / tamFondo.x, static_cast<float>(tamVentana.y) / tamFondo.y));
 
     textoTimer.emplace(font, "TIEMPO: 0:0", 30);
-    textoTimer->setPosition(Vector2f(265.f, tamVentana.y - 105.f));
+    textoTimer->setPosition(Vector2f(750, tamVentana.y - 185));
     textoTimer->setFillColor(Color::White);
 
     textoCantidadBombas.emplace(font, "", 30);
-    textoCantidadBombas->setPosition(Vector2f(265.f, tamVentana.y - 60.f));
+    textoCantidadBombas->setPosition(Vector2f(750, tamVentana.y - 140));
 
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
@@ -105,9 +105,9 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     botonVolver.setOutlineColor(Color::White);
     botonVolver.setOutlineThickness(2.f);
     botonVolver.setOrigin({120.f, 27.5f});
-    botonVolver.setPosition({tamVentana.x / 2.f, tamVentana.y / 2.f + 130.f});
+    botonVolver.setPosition({tamVentana.x  / 2.f, tamVentana.y / 2.f + 130.f});
 
-    textoVolver.emplace(font, "VOLVER", 32);
+    textoVolver.emplace(font, "Volver al menú", 32);
     textoVolver->setFillColor(Color::White);
     FloatRect lbVolver = textoVolver->getLocalBounds();
     textoVolver->setOrigin({lbVolver.position.x + lbVolver.size.x / 2.f, lbVolver.position.y + lbVolver.size.y / 2.f});
@@ -161,7 +161,7 @@ bool Juego::inicializarTablero(RenderWindow& window) {
 
     bombaHud.emplace(texturasBombas[0]);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
-    bombaHud->setPosition(Vector2f(665.f, tamVentana.y - 70.f));
+    bombaHud->setPosition(Vector2f(1150, tamVentana.y - 150));
 
     vidaHud.emplace(texturaVida);
     vidaHud->setPosition(Vector2f(270, tamVentana.y - 170));
@@ -181,11 +181,11 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     textoPersonaje->setPosition(Vector2f(270, tamVentana.y - 230));
 
     textoHablidad.emplace(font, personaje->getTexto(HABILIDAD), 28);
-    textoHablidad->setPosition(Vector2f(750, tamVentana.y - 185));
+    textoHablidad->setPosition(Vector2f(150.f, tamVentana.y - 105.f));
     textoHablidad->setFillColor(personaje->getColor(colorHabilidad));
 
     textoPasiva.emplace(font, personaje->getTexto(PASIVA), 28);
-    textoPasiva->setPosition(Vector2f(750, tamVentana.y - 140));
+    textoPasiva->setPosition(Vector2f(150.f, tamVentana.y - 60.f));
     textoPasiva->setFillColor(personaje->getColor(colorPasiva));
 
     textoStatus.emplace(font, "ESTADO", 36);
@@ -472,7 +472,11 @@ void Juego::gameLoop(RenderWindow& window) {
             int restante = max(0, static_cast<int>(tiempoLimite - tiempoAcumulado));
             int minutos = restante / 60;
             int segundos = restante % 60;
-            textoTimer->setString("TIEMPO: " + to_string(minutos) + ":" + to_string(segundos));
+            if(segundos<10){
+                textoTimer->setString("TIEMPO: " + to_string(minutos) + ":0" + to_string(segundos));
+            } else {
+                textoTimer->setString("TIEMPO: " + to_string(minutos) + ":" + to_string(segundos));
+            }
             if (restante <= 0) {
                 perdio = true;
                 tiempoFinal = tiempoAcumulado;
@@ -496,15 +500,16 @@ void Juego::gameLoop(RenderWindow& window) {
         window.draw(*fondo);
         window.draw(*hud);
         window.draw(*spritePersonajeHud);
-        window.draw(*textoTimer);
         window.draw(*bombaHud);
-        window.draw(*textoCantidadBombas);
+        dibujarConSombra(window, *textoTimer, 3.f);
+        dibujarConSombra(window, *textoCantidadBombas, 3.f);
         window.draw(*vidaHud);
         dibujarConSombra(window, *textoVidaActual, 3.f);
+        dibujarConSombra(window, *textoStatus, 3.f);
+        dibujarConSombra(window, *textoCommands, 3.f);
+        dibujarConSombra(window, *textoArmaduraActual, 3.f);
         window.draw(*armaduraHud);
-        window.draw(*textoArmaduraActual);
-        window.draw(*textoStatus);
-        window.draw(*textoCommands);
+
         for (size_t i = 0; i < vecTextoCommands.size(); i++) {
             window.draw(vecTextoCommands[i]);
         }
