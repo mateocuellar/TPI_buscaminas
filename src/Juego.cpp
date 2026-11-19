@@ -46,12 +46,24 @@ bool Juego::cargarRecursos() {
     "img/bomba_hielo.png",
     "img/bomba_radiacion.png"
     };
-
     texturasBombas.resize(rutasBombas.size());
 
     for (size_t i = 0; i < rutasBombas.size(); i++) {
         if (!texturasBombas[i].loadFromFile(rutasBombas[i])) return false;
     }
+
+    vector<string> rutasExplosiones = {
+    "img/sheetExplosiones/explosion_comun.png",
+    "img/sheetExplosiones/explosion_fuego.png",
+    "img/sheetExplosiones/explosion_hielo.png",
+    "img/sheetExplosiones/explosion_radiacion.png"
+    };
+    texturasExplosiones.resize(rutasExplosiones.size());
+
+    for (size_t i = 0; i < rutasExplosiones.size(); i++) {
+        if (!texturasExplosiones[i].loadFromFile(rutasExplosiones[i])) return false;
+    }
+
     if (!font.openFromFile("fuente.TTF")) return false;
     if (!fontNum.openFromFile("fuentenumeros.TTF")) return false;
     if (!texturaBandera.loadFromFile("img/bandera.png")) return false;
@@ -105,7 +117,7 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     botonVolver.setOutlineColor(Color::White);
     botonVolver.setOutlineThickness(2.f);
     botonVolver.setOrigin({120.f, 27.5f});
-    botonVolver.setPosition({tamVentana.x  / 2.f, tamVentana.y / 2.f + 130.f});
+    botonVolver.setPosition({tamVentana.x / 2.f, tamVentana.y / 2.f + 130.f});
 
     textoVolver.emplace(font, "Volver al menú", 32);
     textoVolver->setFillColor(Color::White);
@@ -230,6 +242,11 @@ void Juego::destapar(int col, int fila) {
 
     if (cas.tipoMina != NINGUNA) {
         cas.revelada = true;
+
+        Explosion e;
+        e.posicion = botones[col * mapa.filas + fila].getPosition();
+        e.tipo = cas.tipoMina - 1;
+        explosiones.push_back(e);
 
         if (cas.tipoMina == FUEGO) {
             for (int dc = -1; dc <= 1; dc++) {
@@ -577,6 +594,9 @@ void Juego::gameLoop(RenderWindow& window) {
                 }
             }
         }
+
+
+
         int frame = 0;
         if (mostrandoDanio) {
             frame = relojDanio.getElapsedTime().asSeconds() / 0.12f;
@@ -616,6 +636,31 @@ void Juego::gameLoop(RenderWindow& window) {
             window.draw(selector);
             spritePersonaje->setPosition({pos.x + tamCuadrado / 2.f, pos.y + tamCuadrado});
             window.draw(*spritePersonaje);
+        }
+        const float TIEMPO_FRAME = 0.10f;
+        for (size_t i = 0; i < explosiones.size(); ) {
+            const Texture& tex = texturasExplosiones[explosiones[i].tipo];
+            Vector2u tamTex = tex.getSize();
+            int altoFrame = tamTex.y;
+            int anchoFrame = altoFrame;
+            int totalFrames = tamTex.x / anchoFrame;
+
+            int frameExp = static_cast<int>(explosiones[i].reloj.getElapsedTime().asSeconds() / TIEMPO_FRAME);
+
+            if (frameExp >= totalFrames) {
+                explosiones.erase(explosiones.begin() + i);
+            }
+            else {
+                Sprite spr(tex);
+                spr.setTextureRect(IntRect({frameExp * anchoFrame, 0}, {anchoFrame, altoFrame}));
+                spr.setOrigin({anchoFrame / 2.f, altoFrame / 2.f});
+                float escala = (tamCuadrado * 2.f) / anchoFrame;
+                spr.setScale({escala, escala});
+                spr.setPosition({explosiones[i].posicion.x + tamCuadrado / 2.f,
+                                 explosiones[i].posicion.y + tamCuadrado / 2.f});
+                window.draw(spr);
+                i++;
+            }
         }
         if (perdio) {
             textoPuntuacion->setString("Puntuacion total: " + to_string(puntajeActual));

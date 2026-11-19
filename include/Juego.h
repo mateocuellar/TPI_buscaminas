@@ -15,6 +15,12 @@
 using namespace std;
 using namespace sf;
 
+struct Explosion {
+    Vector2f posicion;
+    int tipo;
+    Clock reloj;
+};
+
 class Juego {
 private:
     int puntajeActual;
@@ -51,6 +57,7 @@ private:
     Font font;
     Font fontNum;
     std::vector<sf::Texture> texturasBombas;
+    std::vector<sf::Texture> texturasExplosiones;
     Texture texturaBandera;
     Texture texturaHud;
     Texture texturaBloque;
@@ -87,6 +94,7 @@ private:
     RectangleShape botonVolver;
     vector<Sprite> botones;
     vector<Sprite> bombas;
+    vector<Explosion> explosiones;
 
     bool cargarRecursos();
     bool inicializarTablero(RenderWindow& window);
