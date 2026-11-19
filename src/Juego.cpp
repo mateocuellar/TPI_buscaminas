@@ -487,9 +487,7 @@ void Juego::gameLoop(RenderWindow& window) {
                 mult = 2.f;
                 textoTimer->setFillColor(Color::Cyan);
             }
-            else {
-                textoTimer->setFillColor(Color::White);
-            }
+
             tiempoAcumulado += dt * mult;
             int restante = max(0, static_cast<int>(tiempoLimite - tiempoAcumulado));
             int minutos = restante / 60;
@@ -499,6 +497,28 @@ void Juego::gameLoop(RenderWindow& window) {
             } else {
                 textoTimer->setString("TIEMPO: " + to_string(minutos) + ":" + to_string(segundos));
             }
+            Color colorTimer;
+            switch (minutos){
+            case 4:
+                colorTimer = Color(255, 255, 255);
+                break;
+            case 3:
+                colorTimer = Color(255, 200, 200);
+                break;
+            case 2:
+                colorTimer = Color(255, 140, 140);
+                break;
+            case 1:
+                colorTimer = Color(255, 75, 75);
+                break;
+
+            default:
+                colorTimer = Color(255,255,255);
+                break;
+            }
+            textoTimer->setFillColor(colorTimer);
+
+
             if (restante <= 0) {
                 perdio = true;
                 tiempoFinal = tiempoAcumulado;
@@ -519,6 +539,7 @@ void Juego::gameLoop(RenderWindow& window) {
         textoHablidad->setString(personaje->getTexto(HABILIDAD) + " (" + to_string(personaje->getUsosRestantes()) + ")");
         textoCantidadBombas->setString("CANTIDAD DE BOMBAS: " + to_string(mapa.contarBombasRestantes(cantBombas)));
         textoPuntajeHud->setString("PUNTAJE: " + to_string(puntajeActual));
+
         int nivelColor = min(5, puntajeActual / 100);
         uint8_t brillo = static_cast<uint8_t>(90 + nivelColor * 33);
         uint8_t opacidad = static_cast<uint8_t>(170 + nivelColor * 17);
