@@ -100,6 +100,19 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     textoPuntuacion.emplace(font, "", 30);
     textoPuntuacion->setFillColor(Color::White);
 
+    botonVolver.setSize({240.f, 55.f});
+    botonVolver.setFillColor(Color(50, 60, 75));
+    botonVolver.setOutlineColor(Color::White);
+    botonVolver.setOutlineThickness(2.f);
+    botonVolver.setOrigin({120.f, 27.5f});
+    botonVolver.setPosition({tamVentana.x / 2.f, tamVentana.y / 2.f + 130.f});
+
+    textoVolver.emplace(font, "VOLVER", 32);
+    textoVolver->setFillColor(Color::White);
+    FloatRect lbVolver = textoVolver->getLocalBounds();
+    textoVolver->setOrigin({lbVolver.position.x + lbVolver.size.x / 2.f, lbVolver.position.y + lbVolver.size.y / 2.f});
+    textoVolver->setPosition(botonVolver.getPosition());
+
     float anchoTablero = mapa.columnas * tamCuadrado + (mapa.columnas - 1);
     float altoTablero = mapa.filas * tamCuadrado + (mapa.filas - 1);
     float inicioX = (tamVentana.x - anchoTablero) / 2.f;
@@ -130,7 +143,6 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     Vector2u tamBomba = texturasBombas[0].getSize();
     float escalaX = tamCuadrado / tamBomba.x;
     float escalaY = tamCuadrado / tamBomba.y;
-
 
     bandera.emplace(texturaBandera);
     bandera->setScale({escalaX, escalaY});
@@ -331,85 +343,99 @@ void Juego::gameLoop(RenderWindow& window) {
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
             if (event->is<Event::Closed>())
-            window.close();
+                window.close();
+
             if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
-                if (keyPressed->code == Keyboard::Key::Escape || perdio || gano) {
+                if (perdio || gano) {
+                    continue;
+                }
+
+                if (keyPressed->code == Keyboard::Key::Escape) {
                     window.setMouseCursorVisible(true);
                     return;
                 }
-            if (personajeColocado) {
-                bool seMovio = false;
-                Casilla& casActual = mapa.tablero[cursorCol][cursorFila];
-                bool atrapadoEnFuego = (casActual.tiempoEncierro > 0.f);
-                if (!atrapadoEnFuego) {
-                    if (keyPressed->code == Keyboard::Key::W && cursorFila > 0) {
-                        if (mapa.tablero[cursorCol][cursorFila - 1].tiempoFuego <= 0.f) { cursorFila--; seMovio = true; }
+
+                if (personajeColocado) {
+                    bool seMovio = false;
+                    Casilla& casActual = mapa.tablero[cursorCol][cursorFila];
+                    bool atrapadoEnFuego = (casActual.tiempoEncierro > 0.f);
+                    if (!atrapadoEnFuego) {
+                        if (keyPressed->code == Keyboard::Key::W && cursorFila > 0) {
+                            if (mapa.tablero[cursorCol][cursorFila - 1].tiempoFuego <= 0.f) { cursorFila--; seMovio = true; }
+                        }
+                        if (keyPressed->code == Keyboard::Key::S && cursorFila < mapa.filas - 1) {
+                            if (mapa.tablero[cursorCol][cursorFila + 1].tiempoFuego <= 0.f) { cursorFila++; seMovio = true; }
+                        }
+                        if (keyPressed->code == Keyboard::Key::A && cursorCol > 0) {
+                            if (mapa.tablero[cursorCol - 1][cursorFila].tiempoFuego <= 0.f) { cursorCol--; seMovio = true; }
+                        }
+                        if (keyPressed->code == Keyboard::Key::D && cursorCol < mapa.columnas - 1) {
+                            if (mapa.tablero[cursorCol + 1][cursorFila].tiempoFuego <= 0.f) { cursorCol++; seMovio = true; }
+                        }
                     }
-                if (keyPressed->code == Keyboard::Key::S && cursorFila < mapa.filas - 1) {
-                    if (mapa.tablero[cursorCol][cursorFila + 1].tiempoFuego <= 0.f) { cursorFila++; seMovio = true; }
-                }
-                if (keyPressed->code == Keyboard::Key::A && cursorCol > 0) {
-                    if (mapa.tablero[cursorCol - 1][cursorFila].tiempoFuego <= 0.f) { cursorCol--; seMovio = true; }
-                }
-                if (keyPressed->code == Keyboard::Key::D && cursorCol < mapa.columnas - 1) {
-                    if (mapa.tablero[cursorCol + 1][cursorFila].tiempoFuego <= 0.f) { cursorCol++; seMovio = true; }
-                }
-                }
-            Casilla& nuevaCasilla = mapa.tablero[cursorCol][cursorFila];
-            if (seMovio) {
-                if (nuevaCasilla.revelada && nuevaCasilla.tienePowerUp && !nuevaCasilla.powerUpRecogido) {
-                    nuevaCasilla.powerUpRecogido = true;
-                    puntajeActual += 30;
-                    tiempoAcumulado = max(0.f, tiempoAcumulado - 15.f);
-                    personaje->recargarHabilidad();
-                    personaje->setArmadura(personaje->getArmadura() + 1);
-                }
-                if (cartografaPtr != nullptr) {
-                    turnosRecargaTess++;
-                    if (turnosRecargaTess >= 5) {
-                        turnosRecargaTess = 0;
-                        personaje->recargarHabilidad();
+                    Casilla& nuevaCasilla = mapa.tablero[cursorCol][cursorFila];
+                    if (seMovio) {
+                        if (nuevaCasilla.revelada && nuevaCasilla.tienePowerUp && !nuevaCasilla.powerUpRecogido) {
+                            nuevaCasilla.powerUpRecogido = true;
+                            puntajeActual += 30;
+                            tiempoAcumulado = max(0.f, tiempoAcumulado - 15.f);
+                            personaje->recargarHabilidad();
+                            personaje->setArmadura(personaje->getArmadura() + 1);
+                        }
+                        if (cartografaPtr != nullptr) {
+                            turnosRecargaTess++;
+                            if (turnosRecargaTess >= 5) {
+                                turnosRecargaTess = 0;
+                                personaje->recargarHabilidad();
+                            }
+                            if (cartografaPtr->escanearRuta(mapa, cursorCol, cursorFila)) {
+                                textoPasiva->setString("ALERTA: CADENA CERCA");
+                                textoPasiva->setFillColor(Color(255, 100, 100));
+                            }
+                            else {
+                                textoPasiva->setString(personaje->getTexto(PASIVA));
+                                textoPasiva->setFillColor(personaje->getColor(colorPasiva));
+                            }
+                        }
                     }
-                    if (cartografaPtr->escanearRuta(mapa, cursorCol, cursorFila)) {
-                        textoPasiva->setString("ALERTA: CADENA CERCA");
-                        textoPasiva->setFillColor(Color(255, 100, 100));
+                    if (keyPressed->code == Keyboard::Key::E) {
+                        int usosAntes = personaje->getContadorHabilidad();
+                        personaje->habilidad();
+                        if (personaje->getContadorHabilidad() > usosAntes) {
+                            ejecutarHabilidadTactica();
+                            relojAnim.restart();
+                            mostrandoHabilidad = true;
+                        }
                     }
-                    else {
-                        textoPasiva->setString(personaje->getTexto(PASIVA));
-                        textoPasiva->setFillColor(personaje->getColor(colorPasiva));
+                    if (keyPressed->code == Keyboard::Key::R && nuevaCasilla.tiempoFuego <= 0.f) {
+                        destapar(cursorCol, cursorFila);
+                    }
+                    if (keyPressed->code == Keyboard::Key::B && !nuevaCasilla.revelada && nuevaCasilla.tiempoFuego <= 0.f) {
+                        nuevaCasilla.tieneBandera = !nuevaCasilla.tieneBandera;
+                        if (nuevaCasilla.tieneBandera && nuevaCasilla.tipoMina == NINGUNA) {
+                            if (esDesactivador && banderasErroneasUsadas == 0) {
+                                banderasErroneasUsadas++;
+                            }
+                            else if (esEstabilizador) {
+                                puntajeActual = max(0, puntajeActual - 15);
+                            }
+                        }
                     }
                 }
             }
-            if (keyPressed->code == Keyboard::Key::E) {
-                int usosAntes = personaje->getContadorHabilidad();
-                personaje->habilidad();
-                if (personaje->getContadorHabilidad() > usosAntes) {
-                    ejecutarHabilidadTactica();
-                    relojAnim.restart();
-                    mostrandoHabilidad = true;
-                }
-            }
-            if (keyPressed->code == Keyboard::Key::R && nuevaCasilla.tiempoFuego <= 0.f) {
-                destapar(cursorCol, cursorFila);
-            }
-            if (keyPressed->code == Keyboard::Key::B && !nuevaCasilla.revelada && nuevaCasilla.tiempoFuego <= 0.f) {
-                nuevaCasilla.tieneBandera = !nuevaCasilla.tieneBandera;
-                if (nuevaCasilla.tieneBandera && nuevaCasilla.tipoMina == NINGUNA) {
-                    if (esDesactivador && banderasErroneasUsadas == 0) {
-                        banderasErroneasUsadas++;
-                    }
-                    else if (esEstabilizador) {
-                        puntajeActual = max(0, puntajeActual - 15);
-                    }
-                }
-            }
-            }
-            }
+
             if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
                 if (perdio || gano) {
-                    window.setMouseCursorVisible(true);
-                    return;
+                    if (mouseButton->button == Mouse::Button::Left) {
+                        Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
+                        if (botonVolver.getGlobalBounds().contains(mousePos)) {
+                            window.setMouseCursorVisible(true);
+                            return;
+                        }
+                    }
+                    continue;
                 }
+
                 if (mouseButton->button == Mouse::Button::Left && !personajeColocado) {
                     Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
                     for (size_t i = 0; i < botones.size(); i++) {
@@ -429,6 +455,7 @@ void Juego::gameLoop(RenderWindow& window) {
                 }
             }
         }
+
         float dt = relojDelta.restart().asSeconds();
         if (!perdio && !gano && personajeColocado) {
             mapa.actualizarFuego(dt);
@@ -449,6 +476,16 @@ void Juego::gameLoop(RenderWindow& window) {
             if (restante <= 0) {
                 perdio = true;
                 tiempoFinal = tiempoAcumulado;
+            }
+        }
+
+        if (perdio || gano) {
+            window.setMouseCursorVisible(true);
+            Vector2f posMouse = window.mapPixelToCoords(Mouse::getPosition(window));
+            if (botonVolver.getGlobalBounds().contains(posMouse)) {
+                botonVolver.setFillColor(Color(85, 100, 125));
+            } else {
+                botonVolver.setFillColor(Color(50, 60, 75));
             }
         }
         textoArmaduraActual->setString(to_string(personaje->getArmadura()));
@@ -583,6 +620,8 @@ void Juego::gameLoop(RenderWindow& window) {
             window.draw(*textoGameOver);
             window.draw(*textoTimer);
             window.draw(*textoPuntuacion);
+            window.draw(botonVolver);
+            window.draw(*textoVolver);
         }
         if (gano) {
             textoPuntuacion->setString("Puntuacion total: " + to_string(puntajeActual));
@@ -593,6 +632,8 @@ void Juego::gameLoop(RenderWindow& window) {
             window.draw(*textoVictoria);
             window.draw(*textoTimer);
             window.draw(*textoPuntuacion);
+            window.draw(botonVolver);
+            window.draw(*textoVolver);
         }
         window.display();
     }

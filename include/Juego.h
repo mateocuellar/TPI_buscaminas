@@ -81,8 +81,10 @@ private:
     optional<Text> textoGameOver;
     optional<Text> textoVictoria;
     optional<Text> textoPuntuacion;
+    optional<Text> textoVolver;
 
     RectangleShape capaOscura;
+    RectangleShape botonVolver;
     vector<Sprite> botones;
     vector<Sprite> bombas;
 

@@ -1145,7 +1145,7 @@
 	<string_view>
 	<cstdint>
 
-1795049174 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
+1795051498 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -1177,7 +1177,7 @@
 	<numeric>
 	<cmath>
 
-1795041481 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
+1795049697 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
 	"Juego.h"
 	"menuPrincipal.h"
 
