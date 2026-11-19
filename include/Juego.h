@@ -50,7 +50,7 @@ private:
 
     Font font;
     Font fontNum;
-    Texture texturaBomba;
+    std::vector<sf::Texture> texturasBombas;
     Texture texturaBandera;
     Texture texturaHud;
     Texture texturaBloque;

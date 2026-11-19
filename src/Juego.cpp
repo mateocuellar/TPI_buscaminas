@@ -40,9 +40,20 @@ Juego::~Juego() {
 
 bool Juego::cargarRecursos() {
 
+    vector<string> rutasBombas = {
+    "img/bomba.png",
+    "img/bomba_fuego.png",
+    "img/bomba_hielo.png",
+    "img/bomba_radiacion.png"
+    };
+
+    texturasBombas.resize(rutasBombas.size());
+
+    for (size_t i = 0; i < rutasBombas.size(); i++) {
+        if (!texturasBombas[i].loadFromFile(rutasBombas[i])) return false;
+    }
     if (!font.openFromFile("fuente.TTF")) return false;
     if (!fontNum.openFromFile("fuentenumeros.TTF")) return false;
-    if (!texturaBomba.loadFromFile("img/bomba.png")) return false;
     if (!texturaBandera.loadFromFile("img/bandera.png")) return false;
     if (!texturaHud.loadFromFile("img/hud.png")) return false;
     if (!texturaBloque.loadFromFile("img/bloque.png")) return false;
@@ -116,9 +127,10 @@ bool Juego::inicializarTablero(RenderWindow& window) {
         tiempoLimite *= 0.75f;
     }
 
-    Vector2u tamBomba = texturaBomba.getSize();
+    Vector2u tamBomba = texturasBombas[0].getSize();
     float escalaX = tamCuadrado / tamBomba.x;
     float escalaY = tamCuadrado / tamBomba.y;
+
 
     bandera.emplace(texturaBandera);
     bandera->setScale({escalaX, escalaY});
@@ -135,7 +147,7 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     spritePersonajeHud->setScale({anchoMarco / tamPjHud.x, altoMarco / tamPjHud.y});
     spritePersonajeHud->setPosition({153.f, 829.f});
 
-    bombaHud.emplace(texturaBomba);
+    bombaHud.emplace(texturasBombas[0]);
     bombaHud->setScale({escalaX * 0.7f, escalaY * 0.7f});
     bombaHud->setPosition(Vector2f(665.f, tamVentana.y - 70.f));
 
@@ -183,26 +195,19 @@ bool Juego::inicializarTablero(RenderWindow& window) {
 void Juego::sincronizarSpritesBombas() {
 
     bombas.clear();
-    Vector2u tamBomba = texturaBomba.getSize();
-    float escalaX = tamCuadrado / tamBomba.x;
-    float escalaY = tamCuadrado / tamBomba.y;
-
     for (int c = 0; c < mapa.columnas; c++) {
-        for (int f = 0; f < mapa.filas; f++) {
-            int tm = mapa.tablero[c][f].tipoMina;
-            if (tm == NINGUNA) continue;
+    for (int f = 0; f < mapa.filas; f++) {
+        if (mapa.tablero[c][f].tipoMina != NINGUNA) {
+            int idxTex = mapa.tablero[c][f].tipoMina - 1;
 
-            int idx = c * mapa.filas + f;
-            Sprite b(texturaBomba);
-            b.setScale({escalaX, escalaY});
-            b.setPosition(botones[idx].getPosition());
+            Sprite sprBomba(texturasBombas[idxTex]);
+            Vector2u tam = texturasBombas[idxTex].getSize();
+            sprBomba.setScale({tamCuadrado / tam.x, tamCuadrado / tam.y});
+            sprBomba.setPosition(botones[c * mapa.filas + f].getPosition());
 
-            if (tm == FUEGO) b.setColor(Color(255, 80, 50));
-            else if (tm == HIELO) b.setColor(Color(80, 220, 255));
-            else if (tm == RADIACION) b.setColor(Color(100, 255, 80));
-
-            bombas.push_back(b);
+            bombas.push_back(sprBomba);
         }
+    }
     }
 }
 

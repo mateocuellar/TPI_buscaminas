@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1795043049 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
+1795046766 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\main.cpp
 	<windows.h>
 	<SFML/Graphics.hpp>
 	"menuPrincipal.h"
@@ -1145,7 +1145,7 @@
 	<string_view>
 	<cstdint>
 
-1795047340 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
+1795049174 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -1186,4 +1186,11 @@
 	<iostream>
 	<vector>
 	"Map.h"
+
+1795047328 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\character.cpp
+	"Character.h"
+	"menuPrincipal.h"
+	"Juego.h"
+	<SFML/Graphics.hpp>
+	<vector>
 
