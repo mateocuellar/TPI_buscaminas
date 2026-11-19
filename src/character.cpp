@@ -179,7 +179,6 @@ Cartografa::Cartografa() : Character(
 
 void Cartografa::habilidad() {
     if (!usarHabilidad()) return;
-
 }
 
 Cartografa::~Cartografa() {
