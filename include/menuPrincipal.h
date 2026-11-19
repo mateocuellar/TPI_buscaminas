@@ -7,62 +7,66 @@
 #include "Juego.h"
 #include "registroUsuario.h"
 
+using namespace std;
+using namespace sf;
+
 void dibujarConSombra(RenderWindow& window, Text& texto, float desplazamiento);
 
 struct Particula {
-    sf::Sprite sprite;
-    sf::Vector2f velocidad;
+    Sprite sprite;
+    Vector2f velocidad;
     float velRotacion;
 
-    Particula(const sf::Texture& texturaParticula) : sprite(texturaParticula) {
+    Particula(const Texture& texturaParticula) : sprite(texturaParticula) {
 
     }
 };
 
+
+
 class menuPrincipal {
 private:
-    sf::Font font;
+    Font font;
 
+    optional<RectangleShape> btnLogin;
+    optional<RectangleShape> btnRegister;
+    optional<RectangleShape> btnIniciarPartida;
+    optional<RectangleShape> btnCerrarSesion;
+    optional<RectangleShape> btnRanking;
+    optional<RectangleShape> btnSalir;
 
-    std::optional<sf::RectangleShape> btnLogin;
-    std::optional<sf::RectangleShape> btnRegister;
-    std::optional<sf::RectangleShape> btnIniciarPartida;
-    std::optional<sf::RectangleShape> btnCerrarSesion;
-    std::optional<sf::RectangleShape> btnRanking;
-    std::optional<sf::RectangleShape> btnSalir;
+    optional<Text> titulo;
+    optional<Text> titulo2;
+    optional<Text> textoLogin;
+    optional<Text> textoRegister;
+    optional<Text> textoIniciarPartida;
+    optional<Text> textoCerrarSesion;
+    optional<Text> textoRanking;
+    optional<Text> textoSalir;
+    optional<Text> textoTpi;
 
-    std::optional<sf::Text> titulo;
-    std::optional<sf::Text> titulo2;
-    std::optional<sf::Text> textoLogin;
-    std::optional<sf::Text> textoRegister;
-    std::optional<sf::Text> textoIniciarPartida;
-    std::optional<sf::Text> textoCerrarSesion;
-    std::optional<sf::Text> textoRanking;
-    std::optional<sf::Text> textoSalir;
-    std::optional<sf::Text> textoTpi;
+    Texture texturaFondo;
+    optional<Sprite> fondo;
+    optional<Sprite> brillo;
 
-    sf::Texture texturaFondo;
-    std::optional<sf::Sprite> fondo;
-    std::optional<sf::Sprite> brillo;
-
-    sf::Texture texturaHoja;
-    sf::Texture texturaPolvo;
-    sf::Texture texturaBrillo;
-    std::vector<Particula> particulas;
+    Texture texturaHoja;
+    Texture texturaPolvo;
+    Texture texturaBrillo;
+    vector<Particula> particulas;
 
     string usuarioActual = "Invitado";
     bool sesionIniciada = false;
 
-    sf::Clock relojParticulas;
-    void crearParticulas(sf::RenderWindow& window);
-    void actualizarParticulas(float dt, sf::RenderWindow& window);
+    Clock relojParticulas;
+    void crearParticulas(RenderWindow& window);
+    void actualizarParticulas(float dt, RenderWindow& window);
 
     bool cargarRecursos();
-    void inicializarComponentes(sf::RenderWindow& window);
+    void inicializarComponentes(RenderWindow& window);
 
 public:
     menuPrincipal();
-    void ejecutar(sf::RenderWindow& window);
+    void ejecutar(RenderWindow& window);
 };
 
 #endif
