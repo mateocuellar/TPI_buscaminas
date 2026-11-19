@@ -33,15 +33,18 @@ private:
     optional<RectangleShape> btnIniciarPartida;
     optional<RectangleShape> btnCerrarSesion;
     optional<RectangleShape> btnRanking;
+    optional<RectangleShape> btnCreditos;
     optional<RectangleShape> btnSalir;
 
     optional<Text> titulo;
     optional<Text> titulo2;
+    optional<Text> bienvenida;
     optional<Text> textoLogin;
     optional<Text> textoRegister;
     optional<Text> textoIniciarPartida;
     optional<Text> textoCerrarSesion;
     optional<Text> textoRanking;
+    optional<Text> textoCreditos;
     optional<Text> textoSalir;
     optional<Text> textoTpi;
 
@@ -63,7 +66,7 @@ private:
 
     bool cargarRecursos();
     void inicializarComponentes(RenderWindow& window);
-
+    void actualizarBienvenida(RenderWindow& window);
 public:
     menuPrincipal();
     void ejecutar(RenderWindow& window);

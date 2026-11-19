@@ -1,5 +1,6 @@
 #include "MenuPrincipal.h"
 #include <ranking.h>
+#include <creditos.h>
 using namespace std;
 using namespace sf;
 
@@ -75,7 +76,7 @@ void menuPrincipal::crearParticulas(RenderWindow& window) {
     brillo.emplace(texturaBrillo);
     Vector2u tamBrillo = texturaBrillo.getSize();
     brillo->setOrigin(Vector2f(tamBrillo.x / 2.f,tamBrillo.y / 2.f));
-    brillo->setPosition(Vector2f(tamVentana.x - 200, 385));
+    brillo->setPosition(Vector2f(tamVentana.x - 198, 385));
     brillo->setScale(Vector2f(0.7f, 0.7f));
 }
 
@@ -97,7 +98,13 @@ void menuPrincipal::actualizarParticulas(float dt, RenderWindow& window) {
     }
     brillo->rotate(degrees(10.f * dt));
 }
-
+void menuPrincipal::actualizarBienvenida(RenderWindow& window) {
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
+    usuarioActual[0] = toupper(usuarioActual[0]);
+    bienvenida.emplace(font, "¡Bienvenido "+usuarioActual+ "!", 40);
+    FloatRect gbBienvenida = bienvenida->getGlobalBounds();
+    bienvenida->setPosition(Vector2f((tamVentana.x - gbBienvenida.size.x) / 2.f, titulo->getPosition().y + 180.f));
+}
 void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     Vector2u tamVentana = Vector2u(window.getView().getSize());
     Color colorBtn(255, 107, 53);
@@ -112,9 +119,11 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     ));
     fondo->setPosition(Vector2f(0,0));
     titulo.emplace(font, "MINESWEEPER:", 96);
-    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, tamVentana.y * 0.10f));
+    titulo->setPosition(Vector2f((tamVentana.x - titulo->getGlobalBounds().size.x) / 2.f, tamVentana.y * 0.15f));
     titulo2.emplace(font, "ELEMENTAL TACTICS", 60);
     titulo2->setPosition(Vector2f((tamVentana.x - titulo2->getGlobalBounds().size.x) / 2.f, titulo->getPosition().y + 105.f));
+
+
     float inicioY = titulo2->getPosition().y + 150.f;
 
     btnLogin.emplace(Vector2f(anchoBoton, altoBoton));
@@ -136,6 +145,10 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
     btnRanking.emplace(Vector2f(anchoBoton, altoBoton));
     btnRanking->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 2)));
     btnRanking->setFillColor(colorBtn);
+
+    btnCreditos.emplace(Vector2f(anchoBoton, altoBoton));
+    btnCreditos->setPosition(Vector2f((tamVentana.x - anchoBoton) / 2.f, inicioY + (espaciado * 3)));
+    btnCreditos->setFillColor(colorBtn);
 
     btnSalir.emplace(Vector2f(anchoBoton/2-30, altoBoton*0.8));
     btnSalir->setPosition(Vector2f(0, 0));
@@ -176,6 +189,13 @@ void menuPrincipal::inicializarComponentes(RenderWindow& window) {
         btnRanking->getPosition().y + (altoBoton - boundsRanking.size.y) / 2.f - boundsRanking.position.y
     ));
 
+    textoCreditos.emplace(font, "Creditos", 28);
+    FloatRect boundsCreditos = textoCreditos->getGlobalBounds();
+    textoCreditos->setPosition(Vector2f(
+        (tamVentana.x - boundsCreditos.size.x) / 2.f,
+        btnCreditos->getPosition().y + (altoBoton - boundsCreditos.size.y) / 2.f - boundsCreditos.position.y
+    ));
+
     textoSalir.emplace(font, "Salir", 28);
     textoSalir->setFillColor(Color(255,255,255,200));
     FloatRect boundsSalir= textoSalir->getGlobalBounds();
@@ -203,6 +223,7 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
     botones.push_back(&*btnLogin);
     botones.push_back(&*btnRegister);
     botones.push_back(&*btnRanking);
+    botones.push_back(&*btnCreditos);
     botones.push_back(&*btnCerrarSesion);
     botones.push_back(&*btnIniciarPartida);
 
@@ -230,6 +251,8 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                             if (ui.mostrarLogin(window)) {
                                 usuarioActual = ui.getUsuarioActual();
                                 sesionIniciada = true;
+                                actualizarBienvenida(window);
+
                             }
                         }
                         if (btnRegister->getGlobalBounds().contains(mousePos)) {
@@ -256,6 +279,11 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
                         cout << "Abriendo pantalla de Ranking..." << endl;
                         ranking pantallaRanking;
                         pantallaRanking.mostrar(window);
+                    }
+                    if (btnCreditos->getGlobalBounds().contains(mousePos)) {
+                        cout << "Abriendo pantalla de Creditos..." << endl;
+                        creditos pantallaCreditos;
+                        pantallaCreditos.mostrar(window);
                     }
 
                     if (btnSalir->getGlobalBounds().contains(mousePos)) {
@@ -299,10 +327,13 @@ void menuPrincipal::ejecutar(RenderWindow& window) {
             dibujarConSombra(window, *textoIniciarPartida, 3.f);
             window.draw(*btnCerrarSesion);
             dibujarConSombra(window, *textoCerrarSesion, 3.f);
+            dibujarConSombra(window, *bienvenida, 5.f);
         }
 
         window.draw(*btnRanking);
         dibujarConSombra(window, *textoRanking, 3.f);
+        window.draw(*btnCreditos);
+        dibujarConSombra(window, *textoCreditos, 3.f);
 
         window.draw(*btnSalir);
 

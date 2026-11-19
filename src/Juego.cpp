@@ -132,8 +132,8 @@ bool Juego::inicializarTablero(RenderWindow& window) {
 
     float anchoTablero = mapa.columnas * tamCuadrado + (mapa.columnas - 1);
     float altoTablero = mapa.filas * tamCuadrado + (mapa.filas - 1);
-    float inicioX = (tamVentana.x - anchoTablero) / 2.f;
-    float altoDisponible = 830.f;
+    float inicioX = (tamVentana.x - anchoTablero) / 2.f + 10.f;
+    float altoDisponible = 840.f;
     float inicioY = (altoDisponible - altoTablero) / 2.f;
 
     botones.clear();
@@ -499,21 +499,17 @@ void Juego::gameLoop(RenderWindow& window) {
             }
             Color colorTimer;
             switch (minutos){
-            case 4:
-                colorTimer = Color(255, 255, 255);
+            case 4: colorTimer = Color(255, 255, 255);
                 break;
-            case 3:
-                colorTimer = Color(255, 200, 200);
+            case 3: colorTimer = Color(255, 200, 200);
                 break;
-            case 2:
-                colorTimer = Color(255, 140, 140);
+            case 2: colorTimer = Color(255, 140, 140);
                 break;
-            case 1:
-                colorTimer = Color(255, 75, 75);
+            case 1: colorTimer = Color(255, 75, 75);
                 break;
-
-            default:
-                colorTimer = Color(255,255,255);
+            case 0: colorTimer = Color(255, 0, 0);
+                break;
+            default: colorTimer = Color(255,255,255);
                 break;
             }
             textoTimer->setFillColor(colorTimer);
@@ -670,21 +666,20 @@ void Juego::gameLoop(RenderWindow& window) {
             spritePersonaje->setPosition({pos.x + tamCuadrado / 2.f, pos.y + tamCuadrado});
             window.draw(*spritePersonaje);
         }
-        const float TIEMPO_FRAME = 0.10f;
-        for (size_t i = 0; i < explosiones.size(); ) {
-            const Texture& tex = texturasExplosiones[explosiones[i].tipo];
-            Vector2u tamTex = tex.getSize();
-            int altoFrame = tamTex.y;
+        for (size_t i = 0; i < explosiones.size(); i++) {
+            const Texture& texturaExplosion = texturasExplosiones[explosiones[i].tipo];
+            Vector2u tamTexturaExplosion = texturaExplosion.getSize();
+            int altoFrame = tamTexturaExplosion.y;
             int anchoFrame = altoFrame;
-            int totalFrames = tamTex.x / anchoFrame;
+            int totalFrames = tamTexturaExplosion.x / anchoFrame;
 
-            int frameExp = static_cast<int>(explosiones[i].reloj.getElapsedTime().asSeconds() / TIEMPO_FRAME);
+            int frameExp = static_cast<int>(explosiones[i].reloj.getElapsedTime().asSeconds() / 0.10f);
 
             if (frameExp >= totalFrames) {
                 explosiones.erase(explosiones.begin() + i);
             }
             else {
-                Sprite spr(tex);
+                Sprite spr(texturaExplosion);
                 spr.setTextureRect(IntRect({frameExp * anchoFrame, 0}, {anchoFrame, altoFrame}));
                 spr.setOrigin({anchoFrame / 2.f, altoFrame / 2.f});
                 float escala = (tamCuadrado * 2.f) / anchoFrame;
@@ -692,7 +687,6 @@ void Juego::gameLoop(RenderWindow& window) {
                 spr.setPosition({explosiones[i].posicion.x + tamCuadrado / 2.f,
                                  explosiones[i].posicion.y + tamCuadrado / 2.f});
                 window.draw(spr);
-                i++;
             }
         }
         if (perdio) {

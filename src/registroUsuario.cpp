@@ -1,4 +1,5 @@
 #include "registroUsuario.h"
+#include "menuPrincipal.h"
 #include <cstring>
 #include <iostream>
 
@@ -97,7 +98,7 @@ void registroUsuario::inicializarComponentes(RenderWindow& window, const string&
 bool registroUsuario::mostrarLogin(RenderWindow& window) {
     if (!cargarRecursos()) return false;
     inicializarComponentes(window, "INICIAR SESION");
-
+    menuPrincipal user;
     stringUsuario = "";
     stringPassword = "";
     campoSeleccionado = 0;
