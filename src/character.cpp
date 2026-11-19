@@ -1,0 +1,345 @@
+#include "seleccionPersonaje.h"
+#include "menuPrincipal.h"
+#include "Juego.h"
+#include <SFML/Graphics.hpp>
+#include <vector>
+
+using namespace std;
+using namespace sf;
+
+Character::Character(const vector<string>& datos, int vida, int armadura, int maxUsoHabilidad, const vector<string> rutaImagenes, const vector<Color>& colores) {
+    for (int i = 0; i < CANT_TEXTOS && i < (int)datos.size(); i++) {
+        vecTextos[i] = datos[i];
+    }
+    this->nombre = vecTextos[NOMBRE];
+    this->vidas = vida;
+    this->armadura = armadura;
+    this->maxUsoHabilidad = maxUsoHabilidad;
+
+    for (int i = 0; i < CANT_COLORES && i < (int)colores.size(); i++) {
+        vecColores[i] = colores[i];
+    }
+    for (int i = 0; i < CANT_TEXTURAS; i++) {
+        this->rutaImagenes[i] = rutaImagenes[i];
+    }
+}
+
+bool Character::cargarTexturasPersonajes() {
+    for (int i = 0; i < CANT_TEXTURAS; i++) {
+        if (!vecTexturas[i].loadFromFile(rutaImagenes[i])) return false;
+    }
+    return true;
+}
+
+void Desactivador::procesarImpactoMina(int tipoMina) {
+    if (tipoMina == FUEGO) {
+        setArmadura(0);
+        setVida(0);
+    } else {
+        recibirDanio();
+    }
+}
+
+void Estabilizador::procesarImpactoMina(int tipoMina) {
+    if (escudoHermetico && (tipoMina == COMUN || tipoMina == FUEGO)) {
+        escudoHermetico = true;
+        return;
+    }
+    recibirDanio();
+}
+
+void Cartografa::procesarImpactoMina(int tipoMina) {
+    if (tipoMina == COMUN) {
+        recibirDanio();
+        recibirDanio();
+    } else {
+        recibirDanio();
+    }
+}
+
+bool Cartografa::escanearRuta(const Map& mapa, int col, int fila) const {
+    for (int dc = -1; dc <= 1; dc++) {
+        for (int df = -1; df <= 1; df++) {
+            int c = col + dc;
+            int f = fila + df;
+            if (c >= 0 && c < mapa.columnas && f >= 0 && f < mapa.filas) {
+                int tm = mapa.tablero[c][f].tipoMina;
+                if (tm == FUEGO || tm == HIELO || tm == RADIACION) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+Character::~Character() {
+}
+
+string Character::getTexto(TextoPersonaje tipo) const {
+    return vecTextos[tipo];
+}
+
+
+bool Character::usarHabilidad(){
+    if(contadorHabilidad >= maxUsoHabilidad){
+        return false;
+    }
+    contadorHabilidad ++;
+    return true;
+}
+Color Character::getColor(ColoresPersonaje color) const {
+    return vecColores[color];
+}
+const Texture& Character::getTextura(TexturasPersonaje tipo) const {
+    return vecTexturas[tipo];
+}
+
+void Character::recibirDanio(){
+    if(Character::getArmadura()>0){
+        Character::setArmadura(Character::getArmadura() - 1);
+    } else {
+        Character::setVida(Character::getVida() - 1);
+    }
+}
+
+Desactivador::Desactivador() : Character(
+    {"Casper Null",
+     "BUSCAR Y DESACTIVAR",
+     "DESARMADOR",
+     "Filtra la informacion falsa de las Minas\n"
+     "de Radiacion y muestra el numero real. \n"
+     "Tiene un intento de bandera erronea por \n"
+     "nivel sin penalizacion. \n\n"
+     "Es fragil: 1 vida menos y una Mina de Fuego \n"
+     "lo elimina al instante.\n"},
+    1, 1, 2,
+    {"imagenes/personaje-casper-null.png",
+    "img/texturaPersonajes/casper_null_idle_sheet.png",
+    "img/texturaPersonajes/casper_null_danio_sheet.png",
+    "img/texturaPersonajes/casper_null_habilidad_sheet.png",
+    "img/texturaPersonajes/casper_null_hud.png"},
+    {Color(225, 85, 40), Color(220, 175, 60)}) {
+}
+
+void Desactivador::habilidad() {
+    if (!usarHabilidad()) return;
+    cout << "CASPER NULL: Filtrando informacion falsa..." << endl;
+}
+
+Desactivador::~Desactivador() {
+}
+
+Estabilizador::Estabilizador() :Character(
+    {"Dunbar Yunque",
+    "MITIGAR",
+    "ESCUDO TERMICO",
+    "El escudo absorbe por completo el impacto \n"
+    "de minas comunes y de fuego, \n"
+    "y es inmune al hielo. \n"
+    "Pero el tiempo limite se reduce 25% \n"
+    "y cada bandera mal puesta le baja el \n"
+    "puntaje del ranking."},
+    2, 2, 1,
+    {"imagenes/personaje-dunbar-yunque.png",
+    "img/texturaPersonajes/dunbar_yunque_idle_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_danio_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_habilidad_sheet.png",
+    "img/texturaPersonajes/dunbar_yunque_hud.png"},
+
+    {Color(215, 130, 45), Color(110, 195, 235)}) {
+}
+
+void Estabilizador::habilidad() {
+    if (!usarHabilidad()) return;
+    setArmadura(getArmadura() + 1);
+}
+
+Estabilizador::~Estabilizador() {}
+
+Cartografa::Cartografa() : Character(
+    {"Tess Knot",
+     "DESTREZA ANALITICA",
+     "ESCANEO",
+     "Su escaneo avisa si una ruta puede causar \n"
+     "reaccion en cadena. \n"
+     "No tiene defensas: una mina comun \n"
+     "le resta 2 vidas, \n"
+     "no es inmune a ningun estado, \n"
+     "y el escaneo tiene 5 turnos de recarga."},
+    2, 0, 3,
+    {"imagenes/personaje-tess-knot.png",
+    "img/texturaPersonajes/tess_knot_idle_sheet.png",
+    "img/texturaPersonajes/tess_knot_danio_sheet.png",
+    "img/texturaPersonajes/tess_knot_habilidad_sheet.png",
+    "img/texturaPersonajes/tess_knot_hud.png"},
+    {Color(50, 185, 175), Color(80, 200, 110)}) {
+}
+
+void Cartografa::habilidad() {
+    if (!usarHabilidad()) return;
+
+}
+
+Cartografa::~Cartografa() {
+    maxUsoHabilidad = 1;
+}
+
+void borrarPersonajes(vector<Character*>& personajes) {
+    for (size_t i = 0; i < personajes.size(); i++) {
+        delete personajes[i];
+    }
+}
+
+Character* seleccionPersonaje(RenderWindow& window) {
+    Vector2u tamVentana = Vector2u(window.getView().getSize());
+
+    Texture texturaFondo;
+    Font font, fontText;
+
+    if (!texturaFondo.loadFromFile("img/fondo_menu.png")) return nullptr;
+    if (!font.openFromFile("fuente.TTF")) return nullptr;
+    if (!fontText.openFromFile("fuentetextos.TTF")) return nullptr;
+
+    RectangleShape capaOscura;
+    capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
+    capaOscura.setFillColor(Color(0, 0, 0, 80));
+
+    Sprite fondo(texturaFondo);
+    Vector2u tamFondo = texturaFondo.getSize();
+    fondo.setScale(Vector2f(
+        static_cast<float>(tamVentana.x) / static_cast<float>(tamFondo.x),
+        static_cast<float>(tamVentana.y) / static_cast<float>(tamFondo.y)
+    ));
+    fondo.setPosition(Vector2f(0,0));
+    vector<Character*> personajes = {
+        new Desactivador(),
+        new Estabilizador(),
+        new Cartografa()
+    };
+
+    for (size_t i = 0; i < personajes.size(); i++) {
+        if (!personajes[i]->cargarTexturasPersonajes()) {
+            cout << "Error cargando recursos de " << personajes[i]->getTexto(NOMBRE) << endl;
+            borrarPersonajes(personajes);
+            return nullptr;
+        }
+    }
+
+    Color colorNormal(255, 107, 53);
+    Color colorHover(210, 75, 30);
+    Color colorBorde(255, 180, 100);
+
+    float anchoBoton = 800.f, altoBoton = 250.f;
+    float margen = 20.f;
+    float anchoImg = altoBoton - (margen * 2.f);
+    float altoImg = altoBoton - (margen * 2.f);
+    float espaciado = 280.f;
+
+
+    float altoTotal = (altoBoton * 3.f) + ((espaciado - altoBoton) * 2.f);
+    float primeraY = (tamVentana.y - altoTotal) / 2.f;
+
+    vector<RectangleShape> botones;
+    vector<Text> nombres, descripciones;
+    vector<Sprite> sprites;
+
+    for (size_t i = 0; i < personajes.size(); i++) {
+        float y = primeraY + i * espaciado;
+        float xBoton = (tamVentana.x - anchoBoton) / 2.f;
+
+        RectangleShape boton(Vector2f(anchoBoton, altoBoton));
+        boton.setPosition(Vector2f(xBoton, y));
+        boton.setFillColor(colorNormal);
+        botones.push_back(boton);
+
+        Text nombre(font, personajes[i]->getTexto(NOMBRE), 34);
+        nombre.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen));
+        nombres.push_back(nombre);
+
+        Text desc(fontText, personajes[i]->getTexto(DESCRIPCION), 22);
+        desc.setPosition(Vector2f(xBoton + anchoImg + (margen * 2.f), y + margen + 38.f));
+        descripciones.push_back(desc);
+
+        Sprite sprite(personajes[i]->getTextura(FOTO));
+        Vector2u tam = personajes[i]->getTextura(FOTO).getSize();
+        sprite.setScale(Vector2f(anchoImg / tam.x, altoImg / tam.y));
+        sprite.setPosition(Vector2f(xBoton + margen, y + margen));
+        sprites.push_back(sprite);
+    }
+
+
+    while (window.isOpen()) {
+        while (const optional event = window.pollEvent()) {
+            if (event->is<Event::Closed>())
+                window.close();
+
+            if (const auto* keyPressed = event->getIf<Event::KeyPressed>()) {
+                if (keyPressed->code == Keyboard::Key::Escape) {
+                    borrarPersonajes(personajes);
+                    return nullptr;
+                }
+            }
+
+            if (const auto* mouseButton = event->getIf<Event::MouseButtonPressed>()) {
+                if (mouseButton->button == Mouse::Button::Right) {
+                    borrarPersonajes(personajes);
+                    return nullptr;
+                }
+                if (mouseButton->button == Mouse::Button::Left) {
+                    Vector2f mousePos = window.mapPixelToCoords(mouseButton->position);
+                    for (size_t i = 0; i < botones.size(); i++) {
+                        if (botones[i].getGlobalBounds().contains(mousePos)) {
+                            for (Character* p : personajes)
+                                if (p != personajes[i]) delete p;
+                            cout << "se selecciono a " << personajes[i]->getTexto(NOMBRE) << endl;
+                            return personajes[i];
+                        }
+                    }
+                }
+            }
+        }
+
+        Vector2f mousePos = window.mapPixelToCoords(Mouse::getPosition(window));
+        for (size_t i = 0; i < botones.size(); i++) {
+            if (botones[i].getGlobalBounds().contains(mousePos)) {
+                botones[i].setFillColor(colorHover);
+                botones[i].setOutlineColor(colorBorde);
+                botones[i].setOutlineThickness(3.f);
+
+            } else {
+                botones[i].setFillColor(colorNormal);
+                botones[i].setOutlineThickness(0.f);
+            }
+        }
+
+        window.clear(Color(24, 33, 43));
+        window.draw(fondo);
+        window.draw(capaOscura);
+
+        for (size_t i = 0; i < botones.size(); i++) {
+
+            window.draw(botones[i]);
+            window.draw(sprites[i]);
+            dibujarConSombra(window, nombres[i], 2.f);
+            dibujarConSombra(window, descripciones[i], 2.f);
+
+        }
+        window.display();
+    }
+
+    borrarPersonajes(personajes);
+    return nullptr;
+}
+
+void Character::recargarHabilidad() {
+    if (contadorHabilidad > 0) {
+        contadorHabilidad--;
+    }
+}
+
+int Character::getUsosRestantes() const {
+    return maxUsoHabilidad - contadorHabilidad;
+}
+
