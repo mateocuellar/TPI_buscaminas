@@ -45,13 +45,14 @@
 		<Linker>
 			<Add directory="D:/SSD/Users/rodri/Escritorio/Programacion II NEW/TPI_buscaminas/SFML/lib" />
 		</Linker>
+		<Unit filename="include/Character.h" />
 		<Unit filename="include/GestorArchivos.h" />
 		<Unit filename="include/Juego.h" />
 		<Unit filename="include/Map.h" />
 		<Unit filename="include/menuPrincipal.h" />
 		<Unit filename="include/ranking.h" />
 		<Unit filename="include/registroUsuario.h" />
-		<Unit filename="include/seleccionPersonaje.h" />
+		<Unit filename="src/Character.cpp" />
 		<Unit filename="src/GestorArchivos.cpp" />
 		<Unit filename="src/Juego.cpp" />
 		<Unit filename="src/Map.cpp" />
@@ -59,7 +60,6 @@
 		<Unit filename="src/menuPrincipal.cpp" />
 		<Unit filename="src/ranking.cpp" />
 		<Unit filename="src/registroUsuario.cpp" />
-		<Unit filename="src/seleccionPersonaje.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

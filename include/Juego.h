@@ -9,7 +9,7 @@
 #include <optional>
 #include <cmath>
 #include "Map.h"
-#include "seleccionPersonaje.h"
+#include "Character.h"
 #include "GestorArchivos.h"
 
 using namespace std;

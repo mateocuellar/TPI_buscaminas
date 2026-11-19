@@ -1145,7 +1145,7 @@
 	<string_view>
 	<cstdint>
 
-1795039445 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
+1795047340 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -1154,7 +1154,7 @@
 	<optional>
 	<cmath>
 	"Map.h"
-	"seleccionPersonaje.h"
+	"Character.h"
 	"GestorArchivos.h"
 
 1795040053 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\gestorarchivos.cpp
@@ -1180,4 +1180,10 @@
 1795041481 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
 	"Juego.h"
 	"menuPrincipal.h"
+
+1795046766 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\character.h
+	<SFML/Graphics.hpp>
+	<iostream>
+	<vector>
+	"Map.h"
 
