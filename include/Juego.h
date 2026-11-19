@@ -82,6 +82,7 @@ private:
     optional<Text> textoVictoria;
     optional<Text> textoPuntuacion;
     optional<Text> textoVolver;
+    optional<Text> textoPuntajeHud;
 
     RectangleShape capaOscura;
     RectangleShape botonVolver;

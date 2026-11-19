@@ -542,7 +542,7 @@
 	<string_view>
 	<cstdint>
 
-1795022061 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
+1795052275 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\menuprincipal.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<optional>
@@ -587,7 +587,7 @@
 	<SFML/Graphics.hpp>
 	<vector>
 
-1795039159 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
+1795052275 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\menuprincipal.cpp
 	"MenuPrincipal.h"
 	<ranking.h>
 
@@ -1145,7 +1145,7 @@
 	<string_view>
 	<cstdint>
 
-1795051498 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
+1795053937 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\juego.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<random>
@@ -1177,18 +1177,18 @@
 	<numeric>
 	<cmath>
 
-1795049697 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
+1795054354 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\juego.cpp
 	"Juego.h"
 	"menuPrincipal.h"
 
-1795046766 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\character.h
+1795052275 d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\include\character.h
 	<SFML/Graphics.hpp>
 	<iostream>
 	<vector>
 	"Map.h"
 
-1795047328 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\character.cpp
-	"Character.h"
+1795052275 source:d:\ssd\users\rodri\escritorio\programacion ii new\tpi_buscaminas\src\character.cpp
+	"character.h"
 	"menuPrincipal.h"
 	"Juego.h"
 	<SFML/Graphics.hpp>

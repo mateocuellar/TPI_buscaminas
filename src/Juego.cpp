@@ -85,6 +85,11 @@ bool Juego::inicializarTablero(RenderWindow& window) {
     capaOscura.setSize(Vector2f(tamVentana.x, tamVentana.y));
     capaOscura.setFillColor(Color(0, 0, 0, 180));
 
+    textoPuntajeHud.emplace(font, "PUNTAJE: 0", 30);
+    textoPuntajeHud->setPosition(Vector2f(750.f, tamVentana.y - 97.f));
+    textoPuntajeHud->setFillColor(Color(90, 90, 90, 170));
+
+
     textoGameOver.emplace(font, "GAME OVER", 80);
     textoGameOver->setFillColor(Color::Red);
     FloatRect limites = textoGameOver->getGlobalBounds();
@@ -496,6 +501,12 @@ void Juego::gameLoop(RenderWindow& window) {
         textoVidaActual->setString(to_string(personaje->getVida()));
         textoHablidad->setString(personaje->getTexto(HABILIDAD) + " (" + to_string(personaje->getUsosRestantes()) + ")");
         textoCantidadBombas->setString("CANTIDAD DE BOMBAS: " + to_string(mapa.contarBombasRestantes(cantBombas)));
+        textoPuntajeHud->setString("PUNTAJE: " + to_string(puntajeActual));
+        int nivelColor = min(5, puntajeActual / 100);
+        uint8_t brillo = static_cast<uint8_t>(90 + nivelColor * 33);
+        uint8_t opacidad = static_cast<uint8_t>(170 + nivelColor * 17);
+        textoPuntajeHud->setFillColor(Color(brillo, brillo, brillo, opacidad));
+
         window.clear(Color(24, 33, 43));
         window.draw(*fondo);
         window.draw(*hud);
@@ -503,6 +514,7 @@ void Juego::gameLoop(RenderWindow& window) {
         window.draw(*bombaHud);
         dibujarConSombra(window, *textoTimer, 3.f);
         dibujarConSombra(window, *textoCantidadBombas, 3.f);
+        dibujarConSombra(window, *textoPuntajeHud, 3.f);
         window.draw(*vidaHud);
         dibujarConSombra(window, *textoVidaActual, 3.f);
         dibujarConSombra(window, *textoStatus, 3.f);
